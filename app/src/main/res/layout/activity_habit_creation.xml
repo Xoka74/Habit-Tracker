@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".HabitCreationActivity">
+
+    <EditText
+        android:id="@+id/habit_name_input"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:hint="@string/habit_name_hint" />
+
+    <EditText
+        android:id="@+id/habit_description_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:hint="@string/habit_description_hint"
+        app:layout_constraintTop_toBottomOf="@+id/habit_name_input"
+        android:layout_marginTop="30dp" />
+
+    <Spinner
+        android:id="@+id/priority_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        app:layout_constraintTop_toBottomOf="@+id/habit_description_input" />
+
+    <RadioGroup
+        android:id="@+id/type_buttons_radiogroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="30dp"
+        app:layout_constraintTop_toBottomOf="@+id/priority_spinner">
+
+        <RadioButton
+            android:id="@+id/routine_habit_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/routine_habit"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <RadioButton
+            android:id="@+id/physical_habit_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/physical_habit"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    </RadioGroup>
+
+    <EditText
+        android:id="@+id/habit_completion_amount_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:hint="@string/habit_completion_amount_hint"
+        app:layout_constraintTop_toBottomOf="@+id/type_buttons_radiogroup"
+        android:layout_marginTop="30dp" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/complete_creation_button"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        app:fabCustomSize="75dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:src="@drawable/check_icon"
+        android:contentDescription="@string/submit"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
