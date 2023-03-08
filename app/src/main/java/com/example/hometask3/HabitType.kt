@@ -1,8 +1,6 @@
 package com.example.hometask3
 
-import java.io.Serializable
-
-enum class HabitType {
+enum class HabitType : java.io.Serializable {
     Routine,
     Physical,
     Hygienic,

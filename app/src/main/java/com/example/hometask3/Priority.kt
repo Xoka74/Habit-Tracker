@@ -1,8 +1,6 @@
 package com.example.hometask3
 
-import java.io.Serializable
-
-enum class Priority : Serializable {
+enum class Priority : java.io.Serializable {
     High,
     Medium,
     Low,

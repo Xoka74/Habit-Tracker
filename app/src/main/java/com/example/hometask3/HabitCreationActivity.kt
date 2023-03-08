@@ -2,21 +2,19 @@ package com.example.hometask3
 
 import android.content.Intent
 import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
-import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.example.hometask3.databinding.ActivityHabitCreationBinding
 import kotlin.time.Duration
 
-class HabitCreationActivity : AppCompatActivity(), OnItemSelectedListener {
+
+class HabitCreationActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHabitCreationBinding
-    private val habitTypes: Array<HabitType> = HabitType.values()
-
-
+    private lateinit var prioritySpinnerAdapter: ArrayAdapter<Priority>
+    private var habitState = HabitState.Created
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHabitCreationBinding.inflate(layoutInflater)
@@ -25,9 +23,48 @@ class HabitCreationActivity : AppCompatActivity(), OnItemSelectedListener {
         binding.typeButtonsRadiogroup.setOnClickListener { onHabitTypeRadioButtonClicked() }
         binding.completeCreationButton.setOnClickListener { onCompleteHabitCreationButton() }
 
+        setupPrioritySpinnerAdapter()
 
-        binding.prioritySpinner.onItemSelectedListener = this
+        val habit = intent.serializable<Habit>("habit")
+        if (habit != null) {
+            enableEditModeFor(habit)
+            addDeleteButtonFor(habit)
+        }
+    }
 
+    private fun addDeleteButtonFor(habit: Habit) {
+        binding.deleteButton.visibility = View.VISIBLE
+        binding.deleteButton.setOnClickListener {
+            onClickDeleteExistingHabit(
+                habit,
+                intent.getIntExtra("position", 0)
+            )
+        }
+    }
+
+    private fun onClickDeleteExistingHabit(habit: Habit, position: Int) {
+        habitState = HabitState.Deleted
+        val i = Intent(this, MainActivity::class.java).apply {
+            putExtra("habit_state", habitState)
+            putExtra("position", intent.getIntExtra("position", 0))
+        }
+
+        setResult(RESULT_OK, i)
+        finish()
+    }
+
+    private fun enableEditModeFor(habit: Habit) {
+        habitState = HabitState.Edited
+        binding.habitNameInput.setText(habit.name)
+        binding.habitDescriptionInput.setText(habit.description)
+        binding.prioritySpinner.setSelection(prioritySpinnerAdapter.getPosition(habit.priority))
+        //            binding.typeButtonsRadiogroup.
+
+        binding.habitCompletionAmountInput.setText(habit.completionAmount.toString())
+        //.setText(habit.completionAmount)
+    }
+
+    private fun setupPrioritySpinnerAdapter() {
         val prioritySpinnerAdapter: ArrayAdapter<Priority> = ArrayAdapter(
             this,
             android.R.layout.simple_spinner_item,
@@ -36,17 +73,28 @@ class HabitCreationActivity : AppCompatActivity(), OnItemSelectedListener {
             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
 
+        binding.prioritySpinner.onItemSelectedListener = HabitPriorityAdapter()
+        this.prioritySpinnerAdapter = prioritySpinnerAdapter
         binding.prioritySpinner.adapter = prioritySpinnerAdapter
+    }
 
-        val habit = intent.getSerializableExtra("habit") as Habit?
-        if (habit != null) {
-            // Edit mode
-            binding.habitNameInput.setText(habit.name);
-            binding.habitDescriptionInput.setText(habit.description)
-            binding.prioritySpinner.setSelection(prioritySpinnerAdapter.getPosition(habit.priority) + 1)
-//            binding.typeButtonsRadiogroup.
+    private fun onHabitTypeRadioButtonClicked() {
+
+    }
+
+    private fun onCompleteHabitCreationButton() {
+        if (!dataIsCorrect()) return
+
+        val i = Intent(this, MainActivity::class.java).apply {
+            putExtra("habit", createNewHabit())
+            putExtra("habit_state", habitState)
         }
-        // else Adding mode
+
+        if (habitState == HabitState.Edited) {
+            i.putExtra("position", intent.getIntExtra("position", 0))
+        }
+        setResult(RESULT_OK, i)
+        finish()
     }
 
     private fun dataIsCorrect(): Boolean {
@@ -69,7 +117,7 @@ class HabitCreationActivity : AppCompatActivity(), OnItemSelectedListener {
         return Habit(
             name = binding.habitNameInput.text.toString(),
             description = binding.habitDescriptionInput.text.toString(),
-            completionAmount = binding.habitCompletionAmountInput.text.toString().toInt(),
+            completionAmount = binding.habitCompletionAmountInput.text.toString().trim().toInt(),
             priority = binding.prioritySpinner.selectedItem as Priority,
             type = HabitType.Work,
             periodicity = Duration.ZERO,
@@ -82,24 +130,4 @@ class HabitCreationActivity : AppCompatActivity(), OnItemSelectedListener {
         //val checkedHabitTypeId = binding.typeButtonsRadiogroup.checkedRadioButtonId
         //bundle.putSerializable("priority", binding.typeButtonsRadiogroup.findViewById<RadioButton>(checkedHabitTypeId))
     }
-
-    private fun onCompleteHabitCreationButton() {
-        if (!dataIsCorrect()) return
-        intent.putExtra("habit", createNewHabit())
-        setResult(RESULT_OK, Intent(this, MainActivity::class.java))
-        finish()
-    }
-
-    private fun onHabitTypeRadioButtonClicked() {
-
-    }
-
-    override fun onItemSelected(
-        parent: AdapterView<*>?,
-        view: View, position: Int,
-        id: Long
-    ) {
-    }
-
-    override fun onNothingSelected(p0: AdapterView<*>?) {}
 }
