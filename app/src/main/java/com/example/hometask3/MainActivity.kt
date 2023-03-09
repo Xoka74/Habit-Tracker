@@ -4,22 +4,21 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.hometask3.HabitState.*
 import com.example.hometask3.databinding.ActivityMainBinding
-import kotlin.time.Duration
 
 val list = (0..15).map {
     Habit(
         name = "name$it",
         description = "String",
         priority = Priority.High,
-        type = HabitType.Work,
+        type = HabitType.Bad,
         completionAmount = 10,
-        periodicity = Duration.ZERO,
-        color = Color.BLACK,
+        periodicity = TimeInterval(12, Interval.Day),
+        color = Color.RED
     )
 }.toMutableList()
 
@@ -32,13 +31,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setupRecycler()
+        setupRecyclerView()
     }
 
-    private fun setupRecycler() {
-        habitAdapter = HabitAdapter(habits) { habit, position -> onClickEditHabit(habit, position) }
+    private fun setupRecyclerView() {
+        habitAdapter = HabitAdapter(habits,
+            onItemClick = { habit, position -> onClickEditHabit(habit, position) },
+            //onItemLongClick = { position -> onLongClickItem(position)
+        )
         binding.recyclerView.adapter = habitAdapter
-        //habitAdapter.
         binding.addHabitButton.setOnClickListener { onClickAddHabit() }
     }
 
@@ -48,6 +49,11 @@ class MainActivity : AppCompatActivity() {
             putExtra("position", position)
         }
         openHabitCreationActivityForResult(intent)
+    }
+
+    private fun onLongClickItem(position: Int): Boolean {
+        //removeRecyclerItemAtIndex(position, habits, habitAdapter)
+        return true
     }
 
     private fun onClickAddHabit() {
@@ -60,29 +66,40 @@ class MainActivity : AppCompatActivity() {
 
     private var resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val data: Intent = result.data!!
-                val habit = data.serializable<Habit>("habit")
-                Log.e("HABIT_STATE", data.serializable<HabitState>("habit_state").toString())
-                when (data.serializable<HabitState>("habit_state")) {
-                    Created -> {
-                        habits.add(habit!!)
-                        habitAdapter.notifyItemInserted(habits.size)
-                    }
-                    Edited -> {
-                        val index = data.getIntExtra("position", 0)
-                        habits[index] = habit!!
-                        habitAdapter.notifyItemChanged(index)
-                    }
-                    else -> {
-                        val index = data.getIntExtra("position", 0)
-                        Log.e("POSITION", data.getIntExtra("position", 0).toString())
-                        Log.e("SIZE", habits.size.toString())
-                        habits.removeAt(index)
-                        habitAdapter.notifyItemRemoved(index)
-                    }
+            onReceiveResult(result)
+        }
+
+    private fun onReceiveResult(result: ActivityResult) {
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data: Intent = result.data ?: return
+            val habit = data.parcelable<Habit>("habit")
+            when (data.serializable<HabitState>("habit_state")) {
+                Created -> {
+                    habits.add(habit ?: return)
+                    habitAdapter.notifyItemInserted(habits.size)
                 }
+                Edited -> {
+                    val index = data.getIntExtra("position", 0)
+                    habits[index] = habit ?: return
+                    habitAdapter.notifyItemChanged(index)
+                }
+                Deleted -> {
+                    val index = data.getIntExtra("position", 0)
+                    removeRecyclerItemAtIndex(index, habits, habitAdapter)
+                }
+                else -> {}
             }
         }
+    }
+
+    private fun removeRecyclerItemAtIndex(
+        index: Int,
+        list: MutableList<Habit>,
+        adapter: HabitAdapter
+    ) {
+        list.removeAt(index)
+        adapter.notifyItemRemoved(index)
+        adapter.notifyItemRangeChanged(index, list.size)
+    }
 }
 

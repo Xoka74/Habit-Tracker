@@ -1,9 +1,10 @@
 package com.example.hometask3
 
-enum class HabitType : java.io.Serializable {
-    Routine,
-    Physical,
-    Hygienic,
-    Work,
-    Study
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+enum class HabitType : Parcelable {
+    Good,
+    Bad
 }

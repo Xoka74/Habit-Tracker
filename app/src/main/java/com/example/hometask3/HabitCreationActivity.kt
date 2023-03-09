@@ -3,50 +3,70 @@ package com.example.hometask3
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.Toast
+import android.widget.RadioButton
+import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.children
+import androidx.core.view.isVisible
 import com.example.hometask3.databinding.ActivityHabitCreationBinding
-import kotlin.time.Duration
 
 
 class HabitCreationActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHabitCreationBinding
     private lateinit var prioritySpinnerAdapter: ArrayAdapter<Priority>
+    private lateinit var intervalSpinnerAdapter: ArrayAdapter<Interval>
     private var habitState = HabitState.Created
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHabitCreationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.typeButtonsRadiogroup.setOnClickListener { onHabitTypeRadioButtonClicked() }
+//        binding.typeButtonsRadiogroup.setOnClickListener { onHabitTypeRadioButtonClicked() }
+//        binding.typeButtonsRadiogroup.setOnCheckedChangeListener { radioGroup, i ->
+//            Log.e("CHECKED", radioGroup.findViewById<RadioButton>(i).text.toString())
+//        }
         binding.completeCreationButton.setOnClickListener { onCompleteHabitCreationButton() }
 
-        setupPrioritySpinnerAdapter()
+        prioritySpinnerAdapter = setupAdapter(binding.prioritySpinner, Priority.values())
+        intervalSpinnerAdapter = setupAdapter(binding.intervalSpinner, Interval.values())
 
-        val habit = intent.serializable<Habit>("habit")
+        val habit = intent.parcelable<Habit>("habit")
         if (habit != null) {
             enableEditModeFor(habit)
-            addDeleteButtonFor(habit)
+            addDeleteButtonForHabit()
         }
     }
 
-    private fun addDeleteButtonFor(habit: Habit) {
-        binding.deleteButton.visibility = View.VISIBLE
+    private fun <T> setupAdapter(spinner: Spinner, array: Array<T>): ArrayAdapter<T> {
+        val prioritySpinnerAdapter: ArrayAdapter<T> = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_item,
+            array
+        ).apply {
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        }
+
+        spinner.onItemSelectedListener = SpinnerSelectedItemListener()
+        spinner.adapter = prioritySpinnerAdapter
+        return prioritySpinnerAdapter
+    }
+
+    private fun addDeleteButtonForHabit() {
+        binding.deleteButton.isVisible = true
         binding.deleteButton.setOnClickListener {
             onClickDeleteExistingHabit(
-                habit,
                 intent.getIntExtra("position", 0)
             )
         }
     }
 
-    private fun onClickDeleteExistingHabit(habit: Habit, position: Int) {
+    private fun onClickDeleteExistingHabit(position: Int) {
         habitState = HabitState.Deleted
         val i = Intent(this, MainActivity::class.java).apply {
             putExtra("habit_state", habitState)
-            putExtra("position", intent.getIntExtra("position", 0))
+            putExtra("position", position)
         }
 
         setResult(RESULT_OK, i)
@@ -58,28 +78,17 @@ class HabitCreationActivity : AppCompatActivity() {
         binding.habitNameInput.setText(habit.name)
         binding.habitDescriptionInput.setText(habit.description)
         binding.prioritySpinner.setSelection(prioritySpinnerAdapter.getPosition(habit.priority))
-        //            binding.typeButtonsRadiogroup.
-
+        binding.timesAmountInput.setText(habit.periodicity.timesPerInterval.toString())
+        binding.intervalSpinner.setSelection(intervalSpinnerAdapter.getPosition(habit.periodicity.interval))
         binding.habitCompletionAmountInput.setText(habit.completionAmount.toString())
-        //.setText(habit.completionAmount)
-    }
 
-    private fun setupPrioritySpinnerAdapter() {
-        val prioritySpinnerAdapter: ArrayAdapter<Priority> = ArrayAdapter(
-            this,
-            android.R.layout.simple_spinner_item,
-            Priority.values()
-        ).apply {
-            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        for (view in binding.typeButtonsRadiogroup.children) {
+            val btn = view as RadioButton
+            if (btn.text.toString() == habit.type.name){
+                btn.isChecked = true
+                break
+            }
         }
-
-        binding.prioritySpinner.onItemSelectedListener = HabitPriorityAdapter()
-        this.prioritySpinnerAdapter = prioritySpinnerAdapter
-        binding.prioritySpinner.adapter = prioritySpinnerAdapter
-    }
-
-    private fun onHabitTypeRadioButtonClicked() {
-
     }
 
     private fun onCompleteHabitCreationButton() {
@@ -99,17 +108,22 @@ class HabitCreationActivity : AppCompatActivity() {
 
     private fun dataIsCorrect(): Boolean {
         if (binding.habitNameInput.text.toString().trim().isEmpty()) {
-            Toast.makeText(this, "Name of habit is required!", Toast.LENGTH_SHORT)
-                .show()
+            binding.habitNameInput.error = "Name is required!"
             return false
         }
 
         if (binding.habitCompletionAmountInput.text.toString().trim().isEmpty()) {
-            Toast.makeText(this, "Completion amount of habit is required!", Toast.LENGTH_SHORT)
-                .show()
+            binding.habitCompletionAmountInput.error = "Completion amount is required!"
             return false
         }
-
+        if (binding.typeButtonsRadiogroup.checkedRadioButtonId == -1) {
+            //binding.typeButtonsRadiogroup.error = "Type is required!"
+            return false
+        }
+        if (binding.timesAmountInput.text.toString().trim().isEmpty()) {
+            binding.timesAmountInput.error = "Interval is required!"
+            return false
+        }
         return true
     }
 
@@ -119,15 +133,16 @@ class HabitCreationActivity : AppCompatActivity() {
             description = binding.habitDescriptionInput.text.toString(),
             completionAmount = binding.habitCompletionAmountInput.text.toString().trim().toInt(),
             priority = binding.prioritySpinner.selectedItem as Priority,
-            type = HabitType.Work,
-            periodicity = Duration.ZERO,
+            type = HabitType.values()[binding.typeButtonsRadiogroup.indexOfChild(
+                findViewById<RadioButton>(
+                    binding.typeButtonsRadiogroup.checkedRadioButtonId
+                )
+            )],
+            periodicity = TimeInterval(
+                binding.timesAmountInput.text.toString().trim().toInt(),
+                binding.intervalSpinner.selectedItem as Interval
+            ),
             color = Color.BLACK
-//            periodicity=bundle.getString("periodicity")!!,
-//            color=bundle.getString("color")!!,
-//            priority=bundle.getString("priority")!!,
-//            type=bundle.getString("type")!!,,
         )
-        //val checkedHabitTypeId = binding.typeButtonsRadiogroup.checkedRadioButtonId
-        //bundle.putSerializable("priority", binding.typeButtonsRadiogroup.findViewById<RadioButton>(checkedHabitTypeId))
     }
 }
