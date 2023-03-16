@@ -1,26 +1,15 @@
 package com.example.hometask3
 
-class TimeInterval(timesPerInterval: Int, val interval: Interval) : java.io.Serializable{
-    val timesPerInterval: Int
+class TimeInterval(intervalAmount: Int, val interval: Interval) : java.io.Serializable {
+    val intervalAmount: Int
 
     init {
-        this.timesPerInterval =
-            if (timesPerInterval >= 0) timesPerInterval else throw IllegalArgumentException()
+        this.intervalAmount =
+            if (intervalAmount >= 0) intervalAmount else throw IllegalArgumentException()
     }
 
     override fun toString(): String {
-        return if (timesPerInterval != 1) "$timesPerInterval times per $interval" else "Every $interval"
+        return if (intervalAmount != 1) "$intervalAmount $interval\\s" else "$interval"
     }
 }
 
-
-enum class Interval : java.io.Serializable {
-    Second,
-    Minute,
-    Hour,
-    Day,
-    Week,
-    Month,
-    Year,
-    Decade,
-}

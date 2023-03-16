@@ -2,20 +2,28 @@ package com.example.hometask3
 
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.widget.ArrayAdapter
-import android.widget.RadioButton
-import android.widget.Spinner
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
 import androidx.core.view.isVisible
+import androidx.core.view.marginEnd
 import com.example.hometask3.databinding.ActivityHabitCreationBinding
-
 
 class HabitCreationActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHabitCreationBinding
     private lateinit var prioritySpinnerAdapter: ArrayAdapter<Priority>
     private lateinit var intervalSpinnerAdapter: ArrayAdapter<Interval>
+    private lateinit var colorContainerLayout: LinearLayout
+    private lateinit var pickedColorImageView: ImageView
+    private val colors = arrayOf(
+        Color.rgb(0, 255, 255), Color.rgb(0, 0, 0), Color.rgb(0, 0, 255),
+        Color.rgb(255, 0, 255), Color.rgb(128, 128, 128), Color.rgb(0, 128, 0),
+        Color.rgb(0, 255, 0), Color.rgb(128, 0, 0), Color.rgb(0, 0, 128), Color.rgb(128, 128, 0),
+        Color.rgb(128, 0, 128), Color.rgb(255, 0, 0), Color.rgb(192, 192, 192),
+        Color.rgb(0, 128, 128), Color.rgb(255, 255, 255), Color.rgb(255, 255, 0)
+    )
     private var habitState = HabitState.Created
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,14 +31,17 @@ class HabitCreationActivity : AppCompatActivity() {
         binding = ActivityHabitCreationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-//        binding.typeButtonsRadiogroup.setOnClickListener { onHabitTypeRadioButtonClicked() }
-//        binding.typeButtonsRadiogroup.setOnCheckedChangeListener { radioGroup, i ->
-//            Log.e("CHECKED", radioGroup.findViewById<RadioButton>(i).text.toString())
-//        }
         binding.completeCreationButton.setOnClickListener { onCompleteHabitCreationButton() }
 
-        prioritySpinnerAdapter = setupAdapter(binding.prioritySpinner, Priority.values())
-        intervalSpinnerAdapter = setupAdapter(binding.intervalSpinner, Interval.values())
+        prioritySpinnerAdapter = setupAdapterForSpinner(binding.prioritySpinner, Priority.values())
+        intervalSpinnerAdapter = setupAdapterForSpinner(binding.intervalSpinner, Interval.values())
+
+        colorContainerLayout = binding.colorsContainer
+        pickedColorImageView = binding.pickedColor
+        pickedColorImageView.setBackgroundColor(Color.RED)
+
+        setupColors(colorContainerLayout)
+
 
         val habit = intent.parcelable<Habit>("habit")
         if (habit != null) {
@@ -39,7 +50,22 @@ class HabitCreationActivity : AppCompatActivity() {
         }
     }
 
-    private fun <T> setupAdapter(spinner: Spinner, array: Array<T>): ArrayAdapter<T> {
+    private fun setupColors(colorContainer: LinearLayout) {
+        for (color in colors) {
+            val density = this.resources.displayMetrics.density.toInt()
+            val imageView = FrameLayout(this).apply {
+                layoutParams = FrameLayout.LayoutParams(density * 100, density * 100)
+                setBackgroundColor(color)
+
+                setOnClickListener {
+                    pickedColorImageView.setBackgroundColor((it.background as ColorDrawable).color)
+                }
+            }
+            colorContainer.addView(imageView)
+        }
+    }
+
+    private fun <T> setupAdapterForSpinner(spinner: Spinner, array: Array<T>): ArrayAdapter<T> {
         val prioritySpinnerAdapter: ArrayAdapter<T> = ArrayAdapter(
             this,
             android.R.layout.simple_spinner_item,
@@ -78,13 +104,13 @@ class HabitCreationActivity : AppCompatActivity() {
         binding.habitNameInput.setText(habit.name)
         binding.habitDescriptionInput.setText(habit.description)
         binding.prioritySpinner.setSelection(prioritySpinnerAdapter.getPosition(habit.priority))
-        binding.timesAmountInput.setText(habit.periodicity.timesPerInterval.toString())
+        binding.timesAmountInput.setText(habit.periodicity.intervalAmount.toString())
         binding.intervalSpinner.setSelection(intervalSpinnerAdapter.getPosition(habit.periodicity.interval))
         binding.habitCompletionAmountInput.setText(habit.completionAmount.toString())
 
         for (view in binding.typeButtonsRadiogroup.children) {
             val btn = view as RadioButton
-            if (btn.text.toString() == habit.type.name){
+            if (btn.text.toString() == habit.type.name) {
                 btn.isChecked = true
                 break
             }
@@ -116,10 +142,7 @@ class HabitCreationActivity : AppCompatActivity() {
             binding.habitCompletionAmountInput.error = "Completion amount is required!"
             return false
         }
-        if (binding.typeButtonsRadiogroup.checkedRadioButtonId == -1) {
-            //binding.typeButtonsRadiogroup.error = "Type is required!"
-            return false
-        }
+
         if (binding.timesAmountInput.text.toString().trim().isEmpty()) {
             binding.timesAmountInput.error = "Interval is required!"
             return false
@@ -142,7 +165,7 @@ class HabitCreationActivity : AppCompatActivity() {
                 binding.timesAmountInput.text.toString().trim().toInt(),
                 binding.intervalSpinner.selectedItem as Interval
             ),
-            color = Color.BLACK
+            color = (pickedColorImageView.background as ColorDrawable).color
         )
     }
 }

@@ -11,4 +11,11 @@
     <string name="periodicity_title">Habit Periodicity</string>
     <string name="times_amount_placeholder">Times</string>
     <string name="priority_title">Priority:</string>
+    <string name="time_interval">Time Interval</string>
+    <string name="habit_priority">Habit Priority</string>
+    <string name="type_placeholder">Type:</string>
+    <string name="per_placeholder">Per:</string>
+    <string name="of_placeholder">Of:</string>
+    <string name="amount_placeholder">Amount</string>
+    <string name="times_hint">Times</string>
 </resources>

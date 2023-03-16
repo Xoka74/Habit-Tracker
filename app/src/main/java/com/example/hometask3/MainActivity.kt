@@ -9,35 +9,36 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.hometask3.HabitState.*
 import com.example.hometask3.databinding.ActivityMainBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-val list = (0..15).map {
-    Habit(
-        name = "name$it",
-        description = "String",
-        priority = Priority.High,
-        type = HabitType.Bad,
-        completionAmount = 10,
-        periodicity = TimeInterval(12, Interval.Day),
-        color = Color.RED
-    )
-}.toMutableList()
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var habitAdapter: HabitAdapter
-    private val habits: MutableList<Habit> = list
+    private var habits = mutableListOf<Habit>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        habits = (0..15).map {
+            Habit(
+                name = "name$it",
+                description = "String",
+                priority = Priority.High,
+                type = HabitType.Bad,
+                completionAmount = 10,
+                periodicity = TimeInterval(12, Interval.Day),
+                color = Color.RED
+            )}.toMutableList()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setupRecyclerView()
+
     }
 
     private fun setupRecyclerView() {
-        habitAdapter = HabitAdapter(habits,
+        habitAdapter = HabitAdapter(
+            habits,
             onItemClick = { habit, position -> onClickEditHabit(habit, position) },
-            //onItemLongClick = { position -> onLongClickItem(position)
         )
         binding.recyclerView.adapter = habitAdapter
         binding.addHabitButton.setOnClickListener { onClickAddHabit() }
@@ -49,11 +50,6 @@ class MainActivity : AppCompatActivity() {
             putExtra("position", position)
         }
         openHabitCreationActivityForResult(intent)
-    }
-
-    private fun onLongClickItem(position: Int): Boolean {
-        //removeRecyclerItemAtIndex(position, habits, habitAdapter)
-        return true
     }
 
     private fun onClickAddHabit() {
