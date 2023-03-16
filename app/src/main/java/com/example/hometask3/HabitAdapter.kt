@@ -1,11 +1,7 @@
 package com.example.hometask3
 
-import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.ShapeDrawable
-import android.util.Log
 import android.view.*
-import android.view.View.OnCreateContextMenuListener
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hometask3.databinding.ItemHabitBinding
 

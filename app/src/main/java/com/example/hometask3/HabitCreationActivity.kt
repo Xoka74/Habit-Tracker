@@ -8,7 +8,6 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
 import androidx.core.view.isVisible
-import androidx.core.view.marginEnd
 import com.example.hometask3.databinding.ActivityHabitCreationBinding
 
 class HabitCreationActivity : AppCompatActivity() {
@@ -107,6 +106,7 @@ class HabitCreationActivity : AppCompatActivity() {
         binding.timesAmountInput.setText(habit.periodicity.intervalAmount.toString())
         binding.intervalSpinner.setSelection(intervalSpinnerAdapter.getPosition(habit.periodicity.interval))
         binding.habitCompletionAmountInput.setText(habit.completionAmount.toString())
+        binding.pickedColor.setBackgroundColor(habit.color)
 
         for (view in binding.typeButtonsRadiogroup.children) {
             val btn = view as RadioButton
