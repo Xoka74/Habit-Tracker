@@ -18,4 +18,8 @@
     <string name="of_placeholder">Of:</string>
     <string name="amount_placeholder">Amount</string>
     <string name="times_hint">Times</string>
+    <string name="priority">Priority:</string>
+    <string name="description_hint">Description:</string>
+    <string name="periodicity_hint">Periodicity:</string>
+    <string name="times_per">times per</string>
 </resources>

@@ -31,8 +31,13 @@ class HabitAdapter (
             val newDrawable = (binding.colorDot.drawable as GradientDrawable).apply {
                 this.setColor(habit.color)
             }
+            binding.priorityTextView.text = habit.priority.name
             binding.colorDot.setImageDrawable(newDrawable)
-            binding.habitItemContainer.setOnClickListener { onItemClick?.invoke(habit, position) }
+            binding.descriptionTextView.text = habit.description
+            binding.typeTextView.text = habit.type.name
+            binding.completionsAmountTextView.text = habit.completionAmount.toString()
+            binding.timeIntervalTextView.text = habit.periodicity.toString()
+            binding.habitContainer.setOnClickListener { onItemClick?.invoke(habit, position) }
         }
     }
 }
