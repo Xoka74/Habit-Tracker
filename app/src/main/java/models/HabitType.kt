@@ -1,4 +1,4 @@
-package com.example.hometask3
+package models
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

@@ -1,10 +1,10 @@
-package com.example.hometask3
+package models
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-class Habit(
+data class Habit(
     val name: String,
     val description: String,
     val priority: Priority,

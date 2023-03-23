@@ -1,6 +1,8 @@
-package com.example.hometask3
+package models
 
-class TimeInterval(intervalAmount: Int, val interval: Interval) : java.io.Serializable {
+import android.icu.util.TimeUnit
+
+class TimeInterval(intervalAmount: Int, val interval: TimeUnit) : java.io.Serializable {
     val intervalAmount: Int
 
     init {

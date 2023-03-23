@@ -1,154 +1,180 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/habit_container"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginHorizontal="40dp"
-    android:layout_marginTop="16dp"
-    android:layout_marginBottom="50dp">
+    xmlns:tools="http://schemas.android.com/tools">
 
+    <!--    <data>-->
 
-    <LinearLayout
-        android:id="@+id/name_container"
+    <!--        <variable-->
+    <!--            name="habit"-->
+    <!--            type="models.Habit"/>-->
+    <!--    </data>-->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/habit_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="50dp">
 
-        <ImageView
-            android:id="@+id/color_dot"
-            android:layout_width="wrap_content"
+
+        <!--            <TextView-->
+        <!--                app:layout_constraintTop_toTopOf="parent"-->
+        <!--                app:layout_constraintStart_toStartOf="parent"-->
+        <!--                android:id="@+id/habit_name_text_view"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:layout_marginStart="10dp"-->
+        <!--                android:textSize="15sp"-->
+        <!--                tools:text="My habit" />-->
+
+        <LinearLayout
+            android:id="@+id/name_container"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@drawable/circle" />
-
-        <TextView
-            android:id="@+id/habit_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:textSize="15sp"
-            tools:text="My habit" />
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/name_container"
-        android:id="@+id/type_container"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <TextView
             app:layout_constraintStart_toStartOf="parent"
-            android:id="@+id/type_hint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:textSize="15sp"
-            android:text="@string/type_placeholder" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
+            <ImageView
+                android:id="@+id/color_dot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/circle" />
+            <!--                android:text="@{habit.name}"-->
+            <TextView
+                android:id="@+id/habit_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textSize="15sp"
+                tools:text="My habit" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/type_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_width="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/name_container">
+
+            <TextView
+                android:id="@+id/type_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/type_placeholder"
+                android:textSize="15sp"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <!--            android:text="@{habit.type.toString()}"-->
+            <TextView
+                android:id="@+id/type_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textSize="15sp"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="Bad" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/priority_container"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:textSize="15sp"
-            android:id="@+id/type_text_view"/>
-    </LinearLayout>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/type_container">
 
+            <TextView
+                android:id="@+id/priority_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/priority"
+                android:textSize="15sp" />
 
+            <!--            android:text="@{habit.type.toString()}"-->
+            <TextView
+                android:id="@+id/priority_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textSize="15sp"
+                tools:text="High" />
+        </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/priority_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/type_container">
-
-        <TextView
-            android:id="@+id/priority_hint"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/description_container"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:text="@string/priority"
-            android:textSize="15sp"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/priority_container">
 
-        <TextView
-            android:id="@+id/priority_text_view"
-            android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/description_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/description_hint"
+                android:textSize="15sp" />
+
+            <!--            android:text="@{habit.description.toString()}"-->
+            <TextView
+                android:id="@+id/description_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textSize="15sp"
+                tools:text="Description" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/periodicity_container"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:textSize="15sp"/>
-    </LinearLayout>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/description_container">
 
-    <LinearLayout
-        android:id="@+id/description_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/priority_container">
+            <TextView
+                android:id="@+id/periodicity_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/periodicity_hint"
+                android:textSize="15sp" />
 
-        <TextView
-            android:id="@+id/description_hint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:text="@string/description_hint"
-            android:textSize="15sp"/>
+            <!--            android:text="@{String.valueOf(habit.completionAmount)}"-->
+            <TextView
+                android:id="@+id/completions_amount_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textSize="15sp"
+                tools:text="12" />
 
-        <TextView
-            android:id="@+id/description_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:textSize="15sp"/>
-    </LinearLayout>
+            <TextView
+                android:id="@+id/times_per"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="@string/times_per"
+                android:textSize="15sp"
+                tools:text="times per" />
 
-
-    <LinearLayout
-        android:id="@+id/periodicity_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/description_container">
-
-        <TextView
-            android:id="@+id/periodicity_hint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:text="@string/periodicity_hint"
-            android:textSize="15sp"/>
-
-        <TextView
-            android:id="@+id/completions_amount_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:textSize="15sp"
-            tools:text="12"/>
-
-        <TextView
-            android:id="@+id/times_per"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:textSize="15sp"
-            tools:text="times per"
-            android:text="@string/times_per"/>
-
-        <TextView
-            android:id="@+id/time_interval_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:textSize="15sp"
-            tools:text="5 weeks"/>
-    </LinearLayout>
+            <!--            android:text="@{habit.periodicity.toString()}"-->
+            <TextView
+                android:id="@+id/time_interval_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:textSize="15sp"
+                tools:text="5 weeks" />
+        </LinearLayout>
 
 
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -1,4 +1,4 @@
-package com.example.hometask3
+package models
 
 enum class Priority : java.io.Serializable {
     High,

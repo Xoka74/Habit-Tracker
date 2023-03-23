@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/viewPagerFragment"
+        android:name="fragments.HabitsViewPagerFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_habits_view_pager">
+        <action
+            android:id="@+id/action_hostFragment_to_habitDetailsFragment"
+            app:destination="@id/habitDetailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/habitDetailsFragment"
+        android:name="fragments.HabitDetailsFragment"
+        android:label="Habit">
+        <action
+            android:id="@+id/action_habitDetailsFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/appInfo"
+        android:name="fragments.AppInfoFragment"
+        android:label="About app"
+        tools:layout="@layout/fragment_app_info" />
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="fragments.MainFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_mainFragment_to_viewPagerFragment"
+            app:destination="@id/viewPagerFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_habitDetailsFragment"
+            app:destination="@id/habitDetailsFragment" />
+    </fragment>
+</navigation>
