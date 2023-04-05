@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!--    <data>-->
+    <data>
 
-    <!--        <variable-->
-    <!--            name="habit"-->
-    <!--            type="models.Habit"/>-->
-    <!--    </data>-->
+        <variable
+            name="habit"
+            type="models.Habit" />
+    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/habit_container"
@@ -17,17 +17,6 @@
         android:layout_marginHorizontal="40dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="50dp">
-
-
-        <!--            <TextView-->
-        <!--                app:layout_constraintTop_toTopOf="parent"-->
-        <!--                app:layout_constraintStart_toStartOf="parent"-->
-        <!--                android:id="@+id/habit_name_text_view"-->
-        <!--                android:layout_width="wrap_content"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:layout_marginStart="10dp"-->
-        <!--                android:textSize="15sp"-->
-        <!--                tools:text="My habit" />-->
 
         <LinearLayout
             android:id="@+id/name_container"
@@ -42,12 +31,13 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:src="@drawable/circle" />
-            <!--                android:text="@{habit.name}"-->
+
             <TextView
                 android:id="@+id/habit_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
+                android:text="@{habit.name}"
                 android:textSize="15sp"
                 tools:text="My habit" />
         </LinearLayout>
@@ -69,12 +59,13 @@
                 android:textSize="15sp"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <!--            android:text="@{habit.type.toString()}"-->
+
             <TextView
                 android:id="@+id/type_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
+                android:text="@{habit.type.toString()}"
                 android:textSize="15sp"
                 app:layout_constraintStart_toStartOf="parent"
                 tools:text="Bad" />
@@ -96,12 +87,13 @@
                 android:text="@string/priority"
                 android:textSize="15sp" />
 
-            <!--            android:text="@{habit.type.toString()}"-->
+
             <TextView
                 android:id="@+id/priority_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
+                android:text="@{habit.priority.toString()}"
                 android:textSize="15sp"
                 tools:text="High" />
         </LinearLayout>
@@ -121,12 +113,13 @@
                 android:text="@string/description_hint"
                 android:textSize="15sp" />
 
-            <!--            android:text="@{habit.description.toString()}"-->
+
             <TextView
                 android:id="@+id/description_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
+                android:text="@{habit.description}"
                 android:textSize="15sp"
                 tools:text="Description" />
         </LinearLayout>
@@ -147,12 +140,13 @@
                 android:text="@string/periodicity_hint"
                 android:textSize="15sp" />
 
-            <!--            android:text="@{String.valueOf(habit.completionAmount)}"-->
+
             <TextView
                 android:id="@+id/completions_amount_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
+                android:text="@{String.valueOf(habit.completionAmount)}"
                 android:textSize="15sp"
                 tools:text="12" />
 
@@ -165,12 +159,13 @@
                 android:textSize="15sp"
                 tools:text="times per" />
 
-            <!--            android:text="@{habit.periodicity.toString()}"-->
+
             <TextView
                 android:id="@+id/time_interval_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
+                android:text="@{habit.periodicity.toString()}"
                 android:textSize="15sp"
                 tools:text="5 weeks" />
         </LinearLayout>

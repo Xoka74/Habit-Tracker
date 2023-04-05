@@ -11,65 +11,74 @@ import android.widget.*
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.example.hometask3.R
 import com.example.hometask3.databinding.FragmentHabitDetailsBinding
-import com.example.hometask3.parcelable
-import data.HabitsProvider
+import com.example.hometask3.serializable
 import models.Habit
 import models.HabitType
 import models.Priority
 import models.TimeInterval
+import view_models.SharedHabitViewModel
+import view_models.HabitsListViewModel
 
 class HabitDetailsFragment : Fragment() {
     private lateinit var binding: FragmentHabitDetailsBinding
     private lateinit var prioritySpinnerAdapter: ArrayAdapter<Priority>
     private lateinit var intervalSpinnerAdapter: ArrayAdapter<TimeUnit>
-    private lateinit var colorContainerLayout: LinearLayout
-    private lateinit var pickedColorImageView: ImageView
+    private lateinit var sharedHabitViewModel: SharedHabitViewModel
     private lateinit var navController: NavController
+    private lateinit var listViewModel: HabitsListViewModel
+
+    private var checkedType = HabitType.Good
     private var isEditMode = false
-    private lateinit var colors: List<Int>
 
     companion object {
-        const val habitTag = "habit"
+        const val editModeTag = "is_edit_mode"
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentHabitDetailsBinding.inflate(layoutInflater)
-        colors = resources.getStringArray(R.array.habit_colors).map { str -> Color.parseColor(str) }
+
         navController = findNavController()
-        binding.completeCreationButton.setOnClickListener { onClickComplete() }
+        listViewModel = ViewModelProvider(requireActivity())[HabitsListViewModel::class.java]
+        sharedHabitViewModel = ViewModelProvider(requireActivity())[SharedHabitViewModel::class.java]
 
-        prioritySpinnerAdapter = setupAdapterForSpinner(binding.prioritySpinner, Priority.values())
-        intervalSpinnerAdapter = setupAdapterForSpinner(binding.intervalSpinner, TimeUnit.values())
+        with(binding) {
+            completeCreationButton.setOnClickListener { onClickComplete() }
+            typeButtonsRadiogroup.setOnCheckedChangeListener { _, checkedId ->
+                when (checkedId) {
+                    R.id.good_habit_button -> checkedType = HabitType.Good
+                    R.id.bad_habit_button -> checkedType = HabitType.Bad
+                }
+            }
+            prioritySpinnerAdapter = setupAdapterForSpinner(prioritySpinner, Priority.values())
+            intervalSpinnerAdapter = setupAdapterForSpinner(intervalSpinner, TimeUnit.values())
+            pickedColor.setBackgroundColor(Color.RED)
+            setupColors(
+                colorsContainer,
+                resources.getStringArray(R.array.habit_colors).map { str -> Color.parseColor(str) })
+        }
 
-        colorContainerLayout = binding.colorsContainer
-        pickedColorImageView = binding.pickedColor
-        pickedColorImageView.setBackgroundColor(Color.RED)
-
-        setupColors(colorContainerLayout)
-
-        arguments?.parcelable<Habit>(habitTag)?.let {
-            enableEditModeFor(it)
+        arguments?.serializable<Boolean>(editModeTag)?.let {
+            enableEditModeFor(sharedHabitViewModel.mutableHabit.value!!)
             addDeleteButtonForHabit()
         }
         return binding.root
     }
 
-    private fun setupColors(colorContainer: LinearLayout) {
+    private fun setupColors(colorContainer: LinearLayout, colors: List<Int>) {
+        val density = resources.displayMetrics.density.toInt()
         for (color in colors) {
-            val density = resources.displayMetrics.density.toInt()
             val imageView = FrameLayout(requireContext()).apply {
                 layoutParams = FrameLayout.LayoutParams(density * 100, density * 100)
                 setBackgroundColor(color)
-
                 setOnClickListener {
-                    pickedColorImageView.setBackgroundColor((it.background as ColorDrawable).color)
+                    binding.pickedColor.setBackgroundColor((it.background as ColorDrawable).color)
                 }
             }
             colorContainer.addView(imageView)
@@ -78,22 +87,9 @@ class HabitDetailsFragment : Fragment() {
 
     private fun <T> setupAdapterForSpinner(spinner: Spinner, array: Array<T>): ArrayAdapter<T> {
         val prioritySpinnerAdapter: ArrayAdapter<T> = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            array
+            requireContext(), android.R.layout.simple_spinner_item, array
         ).apply {
             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        }
-
-        spinner.onItemSelectedListener = object :
-            AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-
-            }
-
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-
-            }
         }
 
         spinner.adapter = prioritySpinnerAdapter
@@ -104,13 +100,13 @@ class HabitDetailsFragment : Fragment() {
         binding.deleteButton.isVisible = true
         binding.deleteButton.setOnClickListener {
             arguments?.let {
-                onClickDeleteExistingHabit(arguments?.parcelable(habitTag)!!)
+                onClickDeleteExistingHabit(sharedHabitViewModel.mutableHabit.value!!)
             }
         }
     }
 
     private fun onClickDeleteExistingHabit(habit: Habit) {
-        HabitsProvider.deleteHabit(habit)
+        listViewModel.deleteHabit(habit)
         navController.navigate(R.id.action_habitDetailsFragment_to_mainFragment)
     }
 
@@ -139,49 +135,49 @@ class HabitDetailsFragment : Fragment() {
     private fun onClickComplete() {
         if (!dataIsCorrect()) return
 
-        if (isEditMode)
-            HabitsProvider.changeHabit(arguments?.parcelable(habitTag)!!, createNewHabit())
-        else {
-            HabitsProvider.insert(createNewHabit())
-        }
+        if (isEditMode) listViewModel.changeHabit(
+            sharedHabitViewModel.mutableHabit.value!!, createNewHabit()
+        )
+        else listViewModel.addHabit(createNewHabit())
 
         navController.navigate(R.id.action_habitDetailsFragment_to_mainFragment)
     }
 
     private fun dataIsCorrect(): Boolean {
-        if (binding.habitNameInput.text.toString().trim().isEmpty()) {
-            binding.habitNameInput.error = "Name is required!"
-            return false
+        with(binding) {
+            if (habitNameInput.text.toString().trim().isEmpty()) {
+                habitNameInput.error = "Name is required!"
+                return false
+            }
+
+            if (habitCompletionAmountInput.text.toString().trim().isEmpty()) {
+                habitCompletionAmountInput.error = "Completion amount is required!"
+                return false
+            }
+
+            if (timesAmountInput.text.toString().trim().isEmpty()) {
+                timesAmountInput.error = "Interval is required!"
+                return false
+            }
         }
 
-        if (binding.habitCompletionAmountInput.text.toString().trim().isEmpty()) {
-            binding.habitCompletionAmountInput.error = "Completion amount is required!"
-            return false
-        }
-
-        if (binding.timesAmountInput.text.toString().trim().isEmpty()) {
-            binding.timesAmountInput.error = "Interval is required!"
-            return false
-        }
         return true
     }
 
     private fun createNewHabit(): Habit {
-        return Habit(
-            name = binding.habitNameInput.text.toString(),
-            description = binding.habitDescriptionInput.text.toString(),
-            completionAmount = binding.habitCompletionAmountInput.text.toString().trim().toInt(),
-            priority = binding.prioritySpinner.selectedItem as Priority,
-            type = HabitType.values()[binding.typeButtonsRadiogroup.indexOfChild(
-                binding.root.findViewById<RadioButton>(
-                    binding.typeButtonsRadiogroup.checkedRadioButtonId
-                )
-            )],
-            periodicity = TimeInterval(
-                binding.timesAmountInput.text.toString().trim().toInt(),
-                binding.intervalSpinner.selectedItem as TimeUnit
-            ),
-            color = (pickedColorImageView.background as ColorDrawable).color
-        )
+        with(binding) {
+            return Habit(
+                name = habitNameInput.text.toString(),
+                description = habitDescriptionInput.text.toString(),
+                completionAmount = habitCompletionAmountInput.text.toString().trim().toInt(),
+                priority = prioritySpinner.selectedItem as Priority,
+                type = checkedType,
+                periodicity = TimeInterval(
+                    timesAmountInput.text.toString().trim().toInt(),
+                    intervalSpinner.selectedItem as TimeUnit
+                ),
+                color = (pickedColor.background as ColorDrawable).color
+            )
+        }
     }
 }

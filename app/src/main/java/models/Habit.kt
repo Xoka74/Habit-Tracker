@@ -11,5 +11,5 @@ data class Habit(
     val type: HabitType,
     val completionAmount: Int,
     val periodicity: TimeInterval,
-    val color: Int
+    val color: Int,
 ) : Parcelable

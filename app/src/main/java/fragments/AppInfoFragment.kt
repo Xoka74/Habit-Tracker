@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.hometask3.databinding.FragmentAppInfoBinding
 
-
 class AppInfoFragment : Fragment() {
 
     private lateinit var binding: FragmentAppInfoBinding

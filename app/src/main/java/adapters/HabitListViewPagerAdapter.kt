@@ -10,7 +10,6 @@ class HabitListViewPagerAdapter(
     activity: AppCompatActivity,
 ) : FragmentStateAdapter(activity) {
     override fun getItemCount(): Int = 2
-
     override fun createFragment(position: Int): Fragment {
         return when (position) {
             0 -> HabitsViewPagerFragment.newInstance(HabitType.Good)
