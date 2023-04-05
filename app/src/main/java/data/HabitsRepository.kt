@@ -13,7 +13,13 @@ object HabitsRepository {
         Habit(
             name = "Name $it",
             description = "desc",
-            priority = Priority.High,
+            priority = if (it % 3 == 0) {
+                Priority.High
+            } else if (it % 3 == 1) {
+                Priority.Medium
+            } else {
+                Priority.Low
+            },
             type = if (it % 2 == 0) HabitType.Good else HabitType.Bad,
             completionAmount = 10,
             periodicity = TimeInterval(10, MeasureUnit.HOUR),

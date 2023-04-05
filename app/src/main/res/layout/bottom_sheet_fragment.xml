@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bscLayout"
+    android:layout_width="match_parent"
+    android:layout_height="450dp"
+    android:background="@drawable/rounded"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_margin="15dp"
+        android:autofillHints="yes"
+        android:hint="@string/search"
+        android:inputType="text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/sortByPriorityTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="15dp"
+        android:text="@string/sortByPriority"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/searchView" />
+
+    <ImageView
+        android:id="@+id/orderByAscendingButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:contentDescription="@string/orderbyascending"
+        android:src="@drawable/arrow_upward_black"
+        app:layout_constraintStart_toEndOf="@id/sortByPriorityTextView"
+        app:layout_constraintTop_toBottomOf="@id/searchView" />
+
+    <ImageView
+        android:id="@+id/orderByDescendingButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:contentDescription="@string/orderbyascending"
+        android:src="@drawable/arrow_downward_black"
+        app:layout_constraintStart_toEndOf="@id/orderByAscendingButton"
+        app:layout_constraintTop_toBottomOf="@id/searchView" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

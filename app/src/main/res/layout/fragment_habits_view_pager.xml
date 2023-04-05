@@ -10,20 +10,10 @@
         android:layout_height="match_parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-    <FrameLayout
-        android:id="@+id/bottomSheetContainer"
-        android:layout_width="match_parent"
-        android:layout_height="450dp"
-        android:background="@drawable/rounded"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/searchView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:autofillHints="yes"
-            android:hint="@string/search"
-            android:inputType="text" />
-    </FrameLayout>
+    <include
+        android:id="@+id/bottomSheetContainer"
+        layout="@layout/bottom_sheet_fragment" />
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,7 +1,7 @@
 package models
 
-enum class Priority : java.io.Serializable {
-    High,
-    Medium,
-    Low,
+enum class Priority(val value: Int) {
+    Low(0),
+    Medium(1),
+    High(2),
 }

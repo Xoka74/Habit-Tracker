@@ -21,23 +21,17 @@ import models.Habit
 import models.HabitType
 import models.Priority
 import models.TimeInterval
-import view_models.SharedHabitViewModel
 import view_models.HabitsListViewModel
+import view_models.HabitViewModel
 
 class HabitDetailsFragment : Fragment() {
     private lateinit var binding: FragmentHabitDetailsBinding
     private lateinit var prioritySpinnerAdapter: ArrayAdapter<Priority>
     private lateinit var intervalSpinnerAdapter: ArrayAdapter<TimeUnit>
-    private lateinit var sharedHabitViewModel: SharedHabitViewModel
+    private lateinit var habitViewModel: HabitViewModel
     private lateinit var navController: NavController
     private lateinit var listViewModel: HabitsListViewModel
-
     private var checkedType = HabitType.Good
-    private var isEditMode = false
-
-    companion object {
-        const val editModeTag = "is_edit_mode"
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -46,7 +40,8 @@ class HabitDetailsFragment : Fragment() {
 
         navController = findNavController()
         listViewModel = ViewModelProvider(requireActivity())[HabitsListViewModel::class.java]
-        sharedHabitViewModel = ViewModelProvider(requireActivity())[SharedHabitViewModel::class.java]
+        habitViewModel =
+            ViewModelProvider(requireActivity())[HabitViewModel::class.java]
 
         with(binding) {
             completeCreationButton.setOnClickListener { onClickComplete() }
@@ -64,10 +59,11 @@ class HabitDetailsFragment : Fragment() {
                 resources.getStringArray(R.array.habit_colors).map { str -> Color.parseColor(str) })
         }
 
-        arguments?.serializable<Boolean>(editModeTag)?.let {
-            enableEditModeFor(sharedHabitViewModel.mutableHabit.value!!)
+        if (habitViewModel.habit.value != null){
+            enableEditModeFor(habitViewModel.habit.value!!)
             addDeleteButtonForHabit()
         }
+
         return binding.root
     }
 
@@ -100,19 +96,17 @@ class HabitDetailsFragment : Fragment() {
         binding.deleteButton.isVisible = true
         binding.deleteButton.setOnClickListener {
             arguments?.let {
-                onClickDeleteExistingHabit(sharedHabitViewModel.mutableHabit.value!!)
+                onClickDeleteExistingHabit()
             }
         }
     }
 
-    private fun onClickDeleteExistingHabit(habit: Habit) {
-        listViewModel.deleteHabit(habit)
+    private fun onClickDeleteExistingHabit() {
+        habitViewModel.deleteHabit()
         navController.navigate(R.id.action_habitDetailsFragment_to_mainFragment)
     }
 
     private fun enableEditModeFor(habit: Habit) {
-        isEditMode = true
-
         with(binding) {
             habitNameInput.setText(habit.name)
             habitDescriptionInput.setText(habit.description)
@@ -134,12 +128,7 @@ class HabitDetailsFragment : Fragment() {
 
     private fun onClickComplete() {
         if (!dataIsCorrect()) return
-
-        if (isEditMode) listViewModel.changeHabit(
-            sharedHabitViewModel.mutableHabit.value!!, createNewHabit()
-        )
-        else listViewModel.addHabit(createNewHabit())
-
+        habitViewModel.saveHabit(createNewHabit())
         navController.navigate(R.id.action_habitDetailsFragment_to_mainFragment)
     }
 
@@ -176,7 +165,7 @@ class HabitDetailsFragment : Fragment() {
                     timesAmountInput.text.toString().trim().toInt(),
                     intervalSpinner.selectedItem as TimeUnit
                 ),
-                color = (pickedColor.background as ColorDrawable).color
+                color = (pickedColor.background as ColorDrawable).color,
             )
         }
     }

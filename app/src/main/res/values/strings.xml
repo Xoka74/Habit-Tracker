@@ -39,4 +39,6 @@
     <string name="linkToGithub">App has been created by <a href="https://github.com/Xoka74">me</a></string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="search">Search</string>
+    <string name="sortByPriority">Сортировать по приоритету:</string>
+    <string name="orderbyascending">orderByAscending</string>
 </resources>

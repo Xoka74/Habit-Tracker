@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import data.HabitsRepository
+import filters.HabitFilter
 import models.Habit
 
 class HabitsListViewModel(
@@ -20,15 +21,15 @@ class HabitsListViewModel(
         mutableHabits.value = HabitsRepository.habits
     }
 
-    fun addHabit(habit: Habit) {
-        HabitsRepository.addHabit(habit)
+    fun applyFilters(filter: HabitFilter) {
+        mutableHabits.postValue(HabitsRepository.habits.filter { filter.apply(it) })
     }
 
-    fun deleteHabit(habit: Habit) {
-        HabitsRepository.deleteHabit(habit)
-    }
-
-    fun changeHabit(oldHabit: Habit, newHabit: Habit) {
-        HabitsRepository.changeHabit(oldHabit, newHabit)
+    fun orderByPriority(descending: Boolean) {
+        if (descending) {
+            mutableHabits.postValue(mutableHabits.value?.sortedByDescending { it.priority.value })
+        } else {
+            mutableHabits.postValue(mutableHabits.value?.sortedBy { it.priority.value })
+        }
     }
 }

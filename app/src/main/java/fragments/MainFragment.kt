@@ -7,12 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.hometask3.R
 import com.example.hometask3.databinding.FragmentMainBinding
 import com.google.android.material.tabs.TabLayoutMediator
-import view_models.SharedHabitViewModel
 
 
 class MainFragment : Fragment() {

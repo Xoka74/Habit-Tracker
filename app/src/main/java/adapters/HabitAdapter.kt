@@ -15,13 +15,13 @@ import diff_utils.HabitsDiffUtilCallback
 import models.Habit
 
 class HabitAdapter(
-    private var habits: MutableList<Habit>,
+    private var habits: List<Habit>,
     private val onItemClick: ((Habit) -> Unit),
-) : RecyclerView.Adapter<HabitAdapter.HabitViewHolder>(), Filterable {
+) : RecyclerView.Adapter<HabitAdapter.HabitViewHolder>() {
 
-    private val habitsListFull: MutableList<Habit> = mutableListOf()
+    private var habitsListFull: List<Habit> = mutableListOf()
     init{
-        habitsListFull.addAll(habits)
+        habitsListFull = habits.toList()
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HabitViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -35,12 +35,11 @@ class HabitAdapter(
         holder.bind(habits[position])
     }
 
-    fun updateList(newHabits: MutableList<Habit>) {
+    fun updateList(newHabits: List<Habit>) {
         val diffUtil = HabitsDiffUtilCallback(habits, newHabits)
         val diffResults = DiffUtil.calculateDiff(diffUtil)
         habits = newHabits
-        habitsListFull.clear()
-        habitsListFull.addAll(newHabits)
+        habitsListFull = newHabits.toList()
         diffResults.dispatchUpdatesTo(this)
     }
 
@@ -59,32 +58,6 @@ class HabitAdapter(
             return (ResourcesCompat.getDrawable(
                 binding.colorDot.resources, R.drawable.circle, null
             ) as GradientDrawable).apply { setColor(color) }
-        }
-    }
-
-    override fun getFilter(): Filter = filter
-
-    private val filter = object : Filter() {
-        override fun performFiltering(constraint: CharSequence?): FilterResults {
-            val filteredHabits = mutableListOf<Habit>()
-            if (constraint.isNullOrEmpty()) {
-                filteredHabits.addAll(habitsListFull)
-            } else {
-                val filterPattern = constraint.toString().lowercase().trim()
-                filteredHabits.addAll(habitsListFull.filter { it.name.lowercase().contains(filterPattern) })
-            }
-
-            return FilterResults().apply {
-                values = filteredHabits
-            }
-        }
-
-        override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-            val filterResults = results?.values as MutableList<Habit>
-            val diffUtil = HabitsDiffUtilCallback(habits, filterResults)
-            val diffResults = DiffUtil.calculateDiff(diffUtil)
-            habits = filterResults
-            diffResults.dispatchUpdatesTo(this@HabitAdapter)
         }
     }
 }
