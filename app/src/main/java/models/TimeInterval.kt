@@ -11,7 +11,7 @@ class TimeInterval(intervalAmount: Int, val interval: TimeUnit) : java.io.Serial
     }
 
     override fun toString(): String {
-        return if (intervalAmount != 1) "$intervalAmount ${interval}s" else "$interval"
+        return if (intervalAmount != 1) "$intervalAmount ${interval.subtype}s" else interval.subtype
     }
 }
 
