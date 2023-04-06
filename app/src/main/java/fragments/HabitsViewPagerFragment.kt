@@ -73,6 +73,7 @@ class HabitsViewPagerFragment : Fragment() {
         }
 
         BottomSheetBehavior.from(binding.bottomSheetContainer.bscLayout).apply {
+            maxHeight = 600
             peekHeight = 150
             state = BottomSheetBehavior.STATE_COLLAPSED
         }
