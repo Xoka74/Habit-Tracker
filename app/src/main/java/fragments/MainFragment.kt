@@ -35,11 +35,10 @@ class MainFragment : Fragment() {
         habitViewModel =
             ViewModelProvider(requireActivity())[HabitViewModel::class.java]
 
-        habitViewModel.postHabit(null)
-
         binding.addHabitButton.setOnClickListener {
             findNavController().navigate(R.id.action_mainFragment_to_habitDetailsFragment)
         }
+
         filter = HabitFilter(null, null, null)
         habitsListViewModel.applyFilters(filter)
 
@@ -74,18 +73,18 @@ class MainFragment : Fragment() {
             }
         })
 
+        BottomSheetBehavior.from(binding.bottomSheetContainer.bscLayout).apply {
+            peekHeight = 200
+            maxHeight = 600
+            state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+
         binding.bottomSheetContainer.orderByAscendingButton.setOnClickListener {
             habitsListViewModel.orderByPriority(descending = false)
         }
 
         binding.bottomSheetContainer.orderByDescendingButton.setOnClickListener {
             habitsListViewModel.orderByPriority(descending = true)
-        }
-
-        BottomSheetBehavior.from(binding.bottomSheetContainer.bscLayout).apply {
-            peekHeight = 200
-            maxHeight = 600
-            state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
         binding.bottomSheetContainer.allTypesButton.setOnClickListener{

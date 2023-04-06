@@ -9,7 +9,7 @@ import models.TimeInterval
 
 
 object HabitsRepository {
-    val habits = (0..30).map {
+    val habits = (0..9).map {
         Habit(
             name = "Name $it",
             description = "desc",
