@@ -41,4 +41,6 @@
     <string name="search">Search</string>
     <string name="sortByPriority">Сортировать по приоритету:</string>
     <string name="orderbyascending">orderByAscending</string>
+    <string name="all">All</string>
+    <string name="filterByType">Фильтровать по типу:</string>
 </resources>

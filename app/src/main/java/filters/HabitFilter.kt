@@ -6,7 +6,7 @@ import models.Priority
 
 class HabitFilter(
     var name: String?,
-    val type: HabitType?,
+    var type: HabitType?,
     val priority: Priority?,
 ) {
     fun apply(habit: Habit): Boolean {

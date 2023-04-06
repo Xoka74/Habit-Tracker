@@ -1,6 +1,7 @@
 package view_models
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,16 +15,15 @@ class HabitViewModel(
     val habit: LiveData<Habit?>
         get() = mutableHabit
 
-    fun postHabit(habit: Habit) {
-        mutableHabit.postValue(habit)
+    fun postHabit(habit: Habit?) {
+        mutableHabit.value = habit
     }
 
-    fun saveHabit(newHabit: Habit) {
+    fun saveOrEdit(newHabit: Habit) {
         if (habit.value == null) {
             HabitsRepository.addHabit(newHabit)
         } else {
-            HabitsRepository.changeHabit(habit.value!!, newHabit)
-            mutableHabit.value = null
+            HabitsRepository.changeHabit(habit.value ?: return, newHabit)
         }
     }
 
