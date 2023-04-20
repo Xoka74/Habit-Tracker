@@ -1,9 +1,7 @@
 package models
 
-import android.icu.util.TimeUnit
-
-class TimeInterval(intervalAmount: Int, val interval: TimeUnit) : java.io.Serializable {
-    val intervalAmount: Int
+class TimeInterval(intervalAmount: Int, var interval: Duration) : java.io.Serializable {
+    var intervalAmount: Int
 
     init {
         this.intervalAmount =
@@ -11,7 +9,8 @@ class TimeInterval(intervalAmount: Int, val interval: TimeUnit) : java.io.Serial
     }
 
     override fun toString(): String {
-        return if (intervalAmount != 1) "$intervalAmount ${interval}s" else "$interval"
+        val intervalLower = interval.toString().lowercase()
+        return if (intervalAmount != 1) "$intervalAmount ${intervalLower}s" else intervalLower
     }
 }
 

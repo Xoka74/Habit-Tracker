@@ -3,18 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!--    <data>-->
+    <data>
 
-    <!--        <variable-->
-    <!--            name="habit"-->
-    <!--            type="models.Habit" />-->
-    <!--    </data>-->
+        <variable
+            name="habitModel"
+            type="view_models.HabitViewModel" />
+    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginHorizontal="10dp"
-        tools:context="archive.HabitCreationActivity">
+        android:paddingHorizontal="10dp">
 
         <ScrollView
             android:layout_width="match_parent"
@@ -31,16 +30,16 @@
                     android:layout_marginTop="30dp"
                     android:hint="@string/habit_name_hint"
                     android:inputType="text"
+
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-
-                    <!--                    android:text="@{habit.name}"-->
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/habit_name_input_"
+                        android:id="@+id/habit_name_input"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:text="@{habitModel.habit.name}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -56,11 +55,12 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/habit_name_input_container">
 
-                    <!--                    android:text="@{habit.description}"-->
+
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/habit_description_input"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:text="@{habitModel.habit.description}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -83,7 +83,7 @@
                         android:textSize="20sp" />
 
                     <Spinner
-                        android:id="@+id/priority_spinner"
+                        android:id="@+id/prioritySpinner"
                         android:layout_width="200dp"
                         android:layout_height="48dp"
                         android:layout_marginStart="10dp"
@@ -164,12 +164,12 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
 
-                        <!--                        android:text="@{String.valueOf(habit.completionAmount)}"-->
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/habit_completion_amount_input"
+                            android:id="@+id/habitCompletionAmountInput"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="number" />
+                            android:inputType="number"
+                            android:text="@{String.valueOf(habitModel.habit.completionAmount)}" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -198,13 +198,13 @@
                         app:layout_constraintStart_toEndOf="@+id/per_placeholder"
                         app:layout_constraintTop_toTopOf="parent">
 
-                        <!--                        android:text="@{String.valueOf(habit.periodicity.intervalAmount)}"-->
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/times_amount_input"
+                            android:id="@+id/timesAmountInput"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/amount_placeholder"
-                            android:inputType="number" />
+                            android:inputType="number"
+                            android:text="@{String.valueOf(habitModel.habit.periodicity.intervalAmount)}" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -240,12 +240,12 @@
                     app:layout_constraintTop_toBottomOf="@id/periodicity_container">
 
 
-                    <!--                    android:background="@{habit.color}"-->
                     <ImageView
-                        android:id="@+id/picked_color"
+                        android:id="@+id/pickedColor"
                         android:layout_width="75dp"
                         android:layout_height="75dp"
                         android:layout_marginTop="100dp"
+                        android:background="@{habitModel.habit.color}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
 
@@ -257,7 +257,7 @@
                         android:layout_marginTop="30dp"
                         android:orientation="horizontal"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/picked_color"
+                        app:layout_constraintStart_toEndOf="@+id/pickedColor"
                         app:layout_constraintTop_toTopOf="parent">
 
                         <LinearLayout
@@ -265,10 +265,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
-                            app:layout_constraintTop_toBottomOf="@+id/times_amount_input_container">
-
-
-                        </LinearLayout>
+                            app:layout_constraintTop_toBottomOf="@+id/times_amount_input_container"></LinearLayout>
 
                     </HorizontalScrollView>
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -302,6 +299,7 @@
             app:fabCustomSize="75dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
