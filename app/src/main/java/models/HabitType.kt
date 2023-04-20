@@ -1,10 +1,6 @@
 package models
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
-
-@Parcelize
-enum class HabitType : Parcelable {
+enum class HabitType {
     Good,
     Bad
 }

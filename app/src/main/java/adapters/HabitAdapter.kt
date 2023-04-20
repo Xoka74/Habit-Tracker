@@ -15,14 +15,10 @@ import diff_utils.HabitsDiffUtilCallback
 import models.Habit
 
 class HabitAdapter(
-    private var habits: List<Habit>,
+    private var habits: List<Habit> = listOf(),
     private val onItemClick: ((Habit) -> Unit),
 ) : RecyclerView.Adapter<HabitAdapter.HabitViewHolder>() {
 
-    private var habitsListFull: List<Habit> = mutableListOf()
-    init{
-        habitsListFull = habits.toList()
-    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HabitViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ItemHabitBinding.inflate(inflater, parent, false)
@@ -39,7 +35,6 @@ class HabitAdapter(
         val diffUtil = HabitsDiffUtilCallback(habits, newHabits)
         val diffResults = DiffUtil.calculateDiff(diffUtil)
         habits = newHabits
-        habitsListFull = newHabits.toList()
         diffResults.dispatchUpdatesTo(this)
     }
 

@@ -12,44 +12,40 @@ import androidx.navigation.fragment.findNavController
 import com.example.hometask3.R
 import com.example.hometask3.databinding.FragmentMainBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import filters.HabitFilter
+import data.HabitDatabase
 import models.Habit
-import models.HabitType
-import view_models.HabitViewModel
-import view_models.HabitsListViewModel
+import view_models.HabitListViewModel
+import view_models.factories.HabitListViewModelFactory
 
 
 class MainFragment : Fragment() {
     private lateinit var binding: FragmentMainBinding
-    private lateinit var habitViewModel: HabitViewModel
-    private lateinit var habitsListViewModel: HabitsListViewModel
-    private lateinit var filter: HabitFilter
+    private lateinit var habitListViewModel: HabitListViewModel
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentMainBinding.inflate(layoutInflater)
 
-        habitsListViewModel =
-            ViewModelProvider(requireActivity())[HabitsListViewModel::class.java]
-        habitViewModel =
-            ViewModelProvider(requireActivity())[HabitViewModel::class.java]
+        habitListViewModel = ViewModelProvider(
+            requireActivity(),
+            HabitListViewModelFactory(HabitDatabase.getInstance(requireContext()).getHabitDao())
+        )[HabitListViewModel::class.java]
 
         binding.addHabitButton.setOnClickListener {
             findNavController().navigate(R.id.action_mainFragment_to_habitDetailsFragment)
         }
 
-        filter = HabitFilter(null, null, null)
-        habitsListViewModel.applyFilters(filter)
+        habitListViewModel.filter.observe(viewLifecycleOwner){
+            habitListViewModel.searchByName(it)
+        }
 
-        val habitAdapter = HabitAdapter(
-            mutableListOf(),
-            onItemClick = { habit -> onClickEditHabit(habit) },
-        )
+        val habitAdapter = HabitAdapter { habit -> onClickEditHabit(habit) }
 
-        habitsListViewModel.habits.observe(viewLifecycleOwner) { habits ->
-            binding.recyclerView.scrollToPosition(0)
+        habitListViewModel.habits.observe(viewLifecycleOwner) { habits ->
             habitAdapter.updateList(habits)
+        }
+        HabitDatabase.getInstance(requireContext()).getHabitDao().searchByName("hs").observe(viewLifecycleOwner){
+
         }
 
         binding.recyclerView.adapter = habitAdapter
@@ -61,15 +57,14 @@ class MainFragment : Fragment() {
     private fun setupBottomSheetFragment() {
         binding.bottomSheetContainer.searchView.setOnQueryTextListener(object :
             SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
+            override fun onQueryTextChange(query: String?): Boolean {
+//                habitListViewModel.searchByName(filter.apply { name = query })
+                habitListViewModel.applyName(query ?: "")
+                return true
             }
 
-            override fun onQueryTextChange(newText: String?): Boolean {
-                habitsListViewModel.applyFilters(filter.apply {
-                    name = newText
-                })
-                return true
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
             }
         })
 
@@ -80,34 +75,16 @@ class MainFragment : Fragment() {
         }
 
         binding.bottomSheetContainer.orderByAscendingButton.setOnClickListener {
-            habitsListViewModel.orderByPriority(descending = false)
+            habitListViewModel.orderByPriority()
         }
 
         binding.bottomSheetContainer.orderByDescendingButton.setOnClickListener {
-            habitsListViewModel.orderByPriority(descending = true)
-        }
-
-        binding.bottomSheetContainer.allTypesButton.setOnClickListener{
-            habitsListViewModel.applyFilters(filter.apply {
-                type = null
-            })
-        }
-
-        binding.bottomSheetContainer.goodTypeButton.setOnClickListener{
-            habitsListViewModel.applyFilters(filter.apply {
-                type = HabitType.Good
-            })
-        }
-
-        binding.bottomSheetContainer.badTypeButton.setOnClickListener{
-            habitsListViewModel.applyFilters(filter.apply {
-                type = HabitType.Bad
-            })
+            habitListViewModel.orderByPriority()
         }
     }
 
     private fun onClickEditHabit(habit: Habit) {
-        habitViewModel.postHabit(habit)
-        findNavController().navigate(R.id.action_mainFragment_to_habitDetailsFragment)
+        val args = Bundle().apply { putInt(HabitDetailsFragment.habitIdTag, habit.id ?: return) }
+        findNavController().navigate(R.id.action_mainFragment_to_habitDetailsFragment, args)
     }
 }

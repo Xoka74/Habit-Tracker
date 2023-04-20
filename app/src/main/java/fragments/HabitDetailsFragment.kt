@@ -5,65 +5,148 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.icu.util.TimeUnit
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.RadioButton
+import android.widget.TextView
 import androidx.core.view.children
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.hometask3.R
 import com.example.hometask3.databinding.FragmentHabitDetailsBinding
+import data.HabitDatabase
+import models.Duration
 import models.Habit
 import models.HabitType
 import models.Priority
-import models.TimeInterval
 import view_models.HabitViewModel
+import view_models.factories.HabitViewModelFactory
 
 class HabitDetailsFragment : Fragment() {
     private lateinit var binding: FragmentHabitDetailsBinding
     private lateinit var prioritySpinnerAdapter: ArrayAdapter<Priority>
-    private lateinit var intervalSpinnerAdapter: ArrayAdapter<TimeUnit>
+    private lateinit var intervalSpinnerAdapter: ArrayAdapter<Duration>
     private lateinit var habitViewModel: HabitViewModel
-    private var checkedType = HabitType.Good
+    private var isEditMode = false
+
+    companion object {
+        const val habitIdTag = "habit_id_tag"
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentHabitDetailsBinding.inflate(layoutInflater)
-
-        habitViewModel = ViewModelProvider(requireActivity())[HabitViewModel::class.java]
-
+        val habitDao = HabitDatabase.getInstance(requireContext()).getHabitDao()
+        habitViewModel = ViewModelProvider(
+            requireActivity(),
+            HabitViewModelFactory(habitDao)
+        )[HabitViewModel::class.java]
         with(binding) {
-            completeCreationButton.setOnClickListener { onClickComplete() }
-            typeButtonsRadiogroup.setOnCheckedChangeListener { _, checkedId ->
-                when (checkedId) {
-                    R.id.good_habit_button -> checkedType = HabitType.Good
-                    R.id.bad_habit_button -> checkedType = HabitType.Bad
-                }
-            }
             prioritySpinnerAdapter = AdapterUtils.setupAdapterForSpinner(
                 prioritySpinner, Priority.values(), requireContext()
             )
             intervalSpinnerAdapter = AdapterUtils.setupAdapterForSpinner(
-                intervalSpinner, TimeUnit.values(), requireContext()
+                intervalSpinner, Duration.values(), requireContext()
             )
-            pickedColor.setBackgroundColor(Color.RED)
+
             setupColors(colorsContainer,
                 resources.getStringArray(R.array.habit_colors).map { str -> Color.parseColor(str) })
         }
 
-        habitViewModel.habit.value?.let {
-            enableEditModeFor(it)
-            addDeleteButtonForHabit()
+        arguments?.getInt(habitIdTag)?.let { id ->
+            isEditMode = true
+            HabitDatabase.getInstance(requireContext()).getHabitDao().getById(id)
+                .observe(viewLifecycleOwner) { habit ->
+                    habitViewModel.postHabit(habit)
+                    enableEditModeFor(habit)
+                    binding.habitModel = habitViewModel
+                }
+        }.run {
+            habitViewModel.postHabit(Habit())
+            enableEditModeFor(Habit())
         }
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        with(binding) {
+            habitNameInput.addTextChangedListener { habitViewModel.changeName(it.toString()) }
+            habitDescriptionInput.addTextChangedListener { habitViewModel.changeDescription(it.toString()) }
+            timesAmountInput.addTextChangedListener {
+                habitViewModel.changeTimesAmount(it.toString().toIntOrNull() ?: 0)
+            }
+            habitCompletionAmountInput.addTextChangedListener {
+                habitViewModel.changeCompletionAmount(it.toString().toIntOrNull() ?: 0)
+            }
+
+            completeCreationButton.setOnClickListener { onClickComplete() }
+            typeButtonsRadiogroup.setOnCheckedChangeListener { _, checkedId ->
+                val checkedType = when (checkedId) {
+                    R.id.good_habit_button -> HabitType.Good
+                    else -> HabitType.Bad
+                }
+                habitViewModel.changeType(checkedType)
+            }
+
+            prioritySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?, view: View?, position: Int, id: Long
+                ) {
+                    habitViewModel.changePriority(parent?.selectedItem as Priority)
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
+
+
+            intervalSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?, view: View?, position: Int, id: Long
+                ) {
+                    habitViewModel.changeInterval(parent?.selectedItem as Duration)
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
+
+            if (isEditMode) {
+                deleteButton.apply {
+                    isVisible = true
+                    setOnClickListener {
+                        habitViewModel.deleteHabit()
+                        findNavController().navigate(R.id.action_habitDetailsFragment_to_mainFragment)
+                    }
+                }
+            }
+        }
+        super.onViewCreated(view, savedInstanceState)
+    }
+
+    private fun enableEditModeFor(habit: Habit) {
+        with(binding) {
+            prioritySpinner.setSelection(prioritySpinnerAdapter.getPosition(habit.priority))
+            intervalSpinner.setSelection(intervalSpinnerAdapter.getPosition(habit.periodicity.interval))
+            (typeButtonsRadiogroup.children.first {
+                (it as TextView).text.toString() == habit.type.name
+            } as RadioButton).isChecked = true
+        }
+    }
+
+    private fun onClickComplete() {
+        if (!dataIsCorrect()) return
+        if (isEditMode) habitViewModel.edit() else habitViewModel.save()
+        findNavController().navigate(R.id.action_habitDetailsFragment_to_mainFragment)
     }
 
     private fun setupColors(colorContainer: LinearLayout, colors: List<Int>) {
@@ -73,43 +156,12 @@ class HabitDetailsFragment : Fragment() {
                 layoutParams = FrameLayout.LayoutParams(density * 100, density * 100)
                 setBackgroundColor(color)
                 setOnClickListener {
-                    binding.pickedColor.setBackgroundColor((it.background as ColorDrawable).color)
+                    binding.pickedColor.setBackgroundColor(color)
+                    habitViewModel.changeColor(color)
                 }
             }
             colorContainer.addView(imageView)
         }
-    }
-
-
-    private fun addDeleteButtonForHabit() {
-        binding.deleteButton.isVisible = true
-        binding.deleteButton.setOnClickListener {
-            habitViewModel.deleteHabit()
-            findNavController().navigate(R.id.action_habitDetailsFragment_to_mainFragment)
-        }
-    }
-
-    private fun enableEditModeFor(habit: Habit) {
-        with(binding) {
-            habitNameInput.setText(habit.name)
-            habitDescriptionInput.setText(habit.description)
-            prioritySpinner.setSelection(prioritySpinnerAdapter.getPosition(habit.priority))
-            timesAmountInput.setText(habit.periodicity.intervalAmount.toString())
-            intervalSpinner.setSelection(intervalSpinnerAdapter.getPosition(habit.periodicity.interval))
-            habitCompletionAmountInput.setText(habit.completionAmount.toString())
-            pickedColor.setBackgroundColor(habit.color)
-            typeButtonsRadiogroup.children.first {
-                ((it as RadioButton).text.toString() == habit.type.name)
-            }.apply {
-                (this as RadioButton).isChecked = true
-            }
-        }
-    }
-
-    private fun onClickComplete() {
-        if (!dataIsCorrect()) return
-        habitViewModel.saveOrEdit(createNewHabit())
-        findNavController().navigate(R.id.action_habitDetailsFragment_to_mainFragment)
     }
 
     private fun dataIsCorrect(): Boolean {
@@ -131,22 +183,5 @@ class HabitDetailsFragment : Fragment() {
         }
 
         return true
-    }
-
-    private fun createNewHabit(): Habit {
-        with(binding) {
-            return Habit(
-                name = habitNameInput.text.toString(),
-                description = habitDescriptionInput.text.toString(),
-                completionAmount = habitCompletionAmountInput.text.toString().trim().toInt(),
-                priority = prioritySpinner.selectedItem as Priority,
-                type = checkedType,
-                periodicity = TimeInterval(
-                    timesAmountInput.text.toString().trim().toInt(),
-                    intervalSpinner.selectedItem as TimeUnit
-                ),
-                color = (pickedColor.background as ColorDrawable).color,
-            )
-        }
     }
 }

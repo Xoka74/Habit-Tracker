@@ -2,15 +2,13 @@ package filters
 
 import models.Habit
 import models.HabitType
-import models.Priority
 
 class HabitFilter(
-    var name: String?,
-    var type: HabitType?,
-    val priority: Priority?,
+    var name: String? = null,
+    var type: HabitType? = null,
 ) {
     fun apply(habit: Habit): Boolean {
-        return (type == null || type == habit.type) && (priority == null || priority == habit.priority) &&
+        return (type == null || type == habit.type) &&
                 (name.isNullOrEmpty() || habit.name.lowercase().contains(name!!.lowercase().trim()))
     }
 }
