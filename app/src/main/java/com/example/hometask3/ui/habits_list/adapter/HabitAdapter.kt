@@ -1,18 +1,15 @@
-package adapters
+package com.example.hometask3.ui.habits_list.adapter
 
 import android.graphics.drawable.GradientDrawable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Filter
-import android.widget.Filterable
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hometask3.R
 import com.example.hometask3.databinding.ItemHabitBinding
-import diff_utils.HabitsDiffUtilCallback
-import models.Habit
+import com.example.hometask3.ui.habits_list.adapter.diff_utils.HabitsDiffUtilCallback
+import com.example.hometask3.data.models.Habit
 
 class HabitAdapter(
     private var habits: List<Habit> = listOf(),

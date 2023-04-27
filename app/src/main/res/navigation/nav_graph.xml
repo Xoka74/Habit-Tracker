@@ -5,19 +5,10 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/mainFragment">
 
-    <fragment
-        android:id="@+id/viewPagerFragment"
-        android:name="fragments.HabitsViewPagerFragment"
-        android:label="Home"
-        tools:layout="@layout/fragment_habits_view_pager">
-        <action
-            android:id="@+id/action_hostFragment_to_habitDetailsFragment"
-            app:destination="@id/habitDetailsFragment" />
-    </fragment>
 
     <fragment
         android:id="@+id/habitDetailsFragment"
-        android:name="fragments.HabitDetailsFragment"
+        android:name="com.example.hometask3.ui.habit_details.HabitDetailsFragment"
         android:label="Habit">
         <action
             android:id="@+id/action_habitDetailsFragment_to_mainFragment"
@@ -26,17 +17,14 @@
 
     <fragment
         android:id="@+id/appInfo"
-        android:name="fragments.AppInfoFragment"
+        android:name="com.example.hometask3.ui.app_info.AppInfoFragment"
         android:label="About app"
         tools:layout="@layout/fragment_app_info" />
     <fragment
         android:id="@+id/mainFragment"
-        android:name="fragments.MainFragment"
+        android:name="com.example.hometask3.ui.habits_list.HabitListFragment"
         android:label="Home"
-        tools:layout="@layout/fragment_main">
-        <action
-            android:id="@+id/action_mainFragment_to_viewPagerFragment"
-            app:destination="@id/viewPagerFragment" />
+        tools:layout="@layout/fragment_habit_list">
         <action
             android:id="@+id/action_mainFragment_to_habitDetailsFragment"
             app:destination="@id/habitDetailsFragment" />

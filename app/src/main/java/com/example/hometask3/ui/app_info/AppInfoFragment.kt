@@ -1,4 +1,4 @@
-package fragments
+package com.example.hometask3.ui.app_info
 
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
@@ -10,12 +10,11 @@ import com.example.hometask3.databinding.FragmentAppInfoBinding
 
 class AppInfoFragment : Fragment() {
 
-    private lateinit var binding: FragmentAppInfoBinding
+    private val binding by lazy { FragmentAppInfoBinding.inflate(layoutInflater) }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentAppInfoBinding.inflate(layoutInflater)
         binding.developerInfoTextView.movementMethod = LinkMovementMethod.getInstance()
         return binding.root
     }

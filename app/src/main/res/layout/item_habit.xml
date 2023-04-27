@@ -7,7 +7,7 @@
 
         <variable
             name="habit"
-            type="models.Habit" />
+            type="com.example.hometask3.data.models.Habit" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

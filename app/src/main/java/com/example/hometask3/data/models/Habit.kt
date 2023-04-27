@@ -1,11 +1,11 @@
-package models
+package com.example.hometask3.data.models
 
 import android.graphics.Color
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import models.converters.PriorityConverter
+import com.example.hometask3.data.models.converters.PriorityConverter
 
 @Entity
 @TypeConverters(PriorityConverter::class)

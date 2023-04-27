@@ -1,10 +1,10 @@
-package data
+package com.example.hometask3.data
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import models.Habit
+import com.example.hometask3.data.models.Habit
 
 @Database(entities = [Habit::class], version = 2)
 abstract class HabitDatabase : RoomDatabase() {

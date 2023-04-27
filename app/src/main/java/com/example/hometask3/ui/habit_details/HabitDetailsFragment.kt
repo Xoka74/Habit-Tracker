@@ -1,41 +1,48 @@
-package fragments
+package com.example.hometask3.ui.habit_details
 
-import adapters.AdapterUtils
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.icu.util.TimeUnit
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.TextView
 import androidx.core.view.children
-import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.hometask3.R
+import com.example.hometask3.data.HabitDatabase
+import com.example.hometask3.data.models.Duration
+import com.example.hometask3.data.models.Habit
+import com.example.hometask3.data.models.HabitType
+import com.example.hometask3.data.models.Priority
 import com.example.hometask3.databinding.FragmentHabitDetailsBinding
-import data.HabitDatabase
-import models.Duration
-import models.Habit
-import models.HabitType
-import models.Priority
-import view_models.HabitViewModel
-import view_models.factories.HabitViewModelFactory
+import com.example.hometask3.utils.AdapterUtils
 
 class HabitDetailsFragment : Fragment() {
-    private lateinit var binding: FragmentHabitDetailsBinding
-    private lateinit var prioritySpinnerAdapter: ArrayAdapter<Priority>
-    private lateinit var intervalSpinnerAdapter: ArrayAdapter<Duration>
-    private lateinit var habitViewModel: HabitViewModel
+    private val binding by lazy { FragmentHabitDetailsBinding.inflate(layoutInflater) }
+    private val priorityAdapter by lazy {
+        AdapterUtils.createSpinnerAdapter(
+            binding.prioritySpinner, Priority.values(), requireContext()
+        )
+    }
+
+    private val intervalAdapter by lazy {
+        AdapterUtils.createSpinnerAdapter(
+            binding.intervalSpinner, Duration.values(), requireContext()
+        )
+    }
+
+    private val habitViewModel: HabitViewModel by activityViewModels(factoryProducer = {
+        HabitViewModelFactory(
+            HabitDatabase.getInstance(requireContext()).getHabitDao()
+        )
+    })
     private var isEditMode = false
 
     companion object {
@@ -45,35 +52,19 @@ class HabitDetailsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        binding = FragmentHabitDetailsBinding.inflate(layoutInflater)
-        val habitDao = HabitDatabase.getInstance(requireContext()).getHabitDao()
-        habitViewModel = ViewModelProvider(
-            requireActivity(),
-            HabitViewModelFactory(habitDao)
-        )[HabitViewModel::class.java]
-        with(binding) {
-            prioritySpinnerAdapter = AdapterUtils.setupAdapterForSpinner(
-                prioritySpinner, Priority.values(), requireContext()
-            )
-            intervalSpinnerAdapter = AdapterUtils.setupAdapterForSpinner(
-                intervalSpinner, Duration.values(), requireContext()
-            )
-
-            setupColors(colorsContainer,
-                resources.getStringArray(R.array.habit_colors).map { str -> Color.parseColor(str) })
-        }
-
+        setupColors(binding.colorsContainer,
+            resources.getStringArray(R.array.habit_colors).map { str -> Color.parseColor(str) })
         arguments?.getInt(habitIdTag)?.let { id ->
             isEditMode = true
-            HabitDatabase.getInstance(requireContext()).getHabitDao().getById(id)
+            HabitDatabase.getInstance(requireContext()).getHabitDao().getHabitById(id)
                 .observe(viewLifecycleOwner) { habit ->
                     habitViewModel.postHabit(habit)
-                    enableEditModeFor(habit)
+                    enableEditMode(habit)
                     binding.habitModel = habitViewModel
                 }
         }.run {
             habitViewModel.postHabit(Habit())
-            enableEditModeFor(Habit())
+            enableEditMode(Habit())
         }
 
         return binding.root
@@ -81,13 +72,13 @@ class HabitDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         with(binding) {
-            habitNameInput.addTextChangedListener { habitViewModel.changeName(it.toString()) }
-            habitDescriptionInput.addTextChangedListener { habitViewModel.changeDescription(it.toString()) }
+            habitNameInput.addTextChangedListener { habitViewModel.triggerName(it.toString()) }
+            habitDescriptionInput.addTextChangedListener { habitViewModel.triggerDescription(it.toString()) }
             timesAmountInput.addTextChangedListener {
-                habitViewModel.changeTimesAmount(it.toString().toIntOrNull() ?: 0)
+                habitViewModel.triggerTimesAmount(it.toString().toIntOrNull() ?: 0)
             }
             habitCompletionAmountInput.addTextChangedListener {
-                habitViewModel.changeCompletionAmount(it.toString().toIntOrNull() ?: 0)
+                habitViewModel.triggerCompletionAmount(it.toString().toIntOrNull() ?: 0)
             }
 
             completeCreationButton.setOnClickListener { onClickComplete() }
@@ -96,47 +87,38 @@ class HabitDetailsFragment : Fragment() {
                     R.id.good_habit_button -> HabitType.Good
                     else -> HabitType.Bad
                 }
-                habitViewModel.changeType(checkedType)
+                habitViewModel.triggerType(checkedType)
             }
 
             prioritySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
                     parent: AdapterView<*>?, view: View?, position: Int, id: Long
                 ) {
-                    habitViewModel.changePriority(parent?.selectedItem as Priority)
+                    habitViewModel.triggerPriority(parent?.selectedItem as Priority)
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
+
 
 
             intervalSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
                     parent: AdapterView<*>?, view: View?, position: Int, id: Long
                 ) {
-                    habitViewModel.changeInterval(parent?.selectedItem as Duration)
+                    habitViewModel.triggerInterval(parent?.selectedItem as Duration)
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
-            }
-
-            if (isEditMode) {
-                deleteButton.apply {
-                    isVisible = true
-                    setOnClickListener {
-                        habitViewModel.deleteHabit()
-                        findNavController().navigate(R.id.action_habitDetailsFragment_to_mainFragment)
-                    }
-                }
             }
         }
         super.onViewCreated(view, savedInstanceState)
     }
 
-    private fun enableEditModeFor(habit: Habit) {
+    private fun enableEditMode(habit: Habit) {
         with(binding) {
-            prioritySpinner.setSelection(prioritySpinnerAdapter.getPosition(habit.priority))
-            intervalSpinner.setSelection(intervalSpinnerAdapter.getPosition(habit.periodicity.interval))
+            prioritySpinner.setSelection(priorityAdapter.getPosition(habit.priority))
+            intervalSpinner.setSelection(intervalAdapter.getPosition(habit.periodicity.interval))
             (typeButtonsRadiogroup.children.first {
                 (it as TextView).text.toString() == habit.type.name
             } as RadioButton).isChecked = true
@@ -157,7 +139,7 @@ class HabitDetailsFragment : Fragment() {
                 setBackgroundColor(color)
                 setOnClickListener {
                     binding.pickedColor.setBackgroundColor(color)
-                    habitViewModel.changeColor(color)
+                    habitViewModel.triggerColor(color)
                 }
             }
             colorContainer.addView(imageView)

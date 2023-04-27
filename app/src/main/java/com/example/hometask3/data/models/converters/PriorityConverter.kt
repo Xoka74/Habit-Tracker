@@ -1,7 +1,7 @@
-package models.converters
+package com.example.hometask3.data.models.converters
 
 import androidx.room.TypeConverter
-import models.Priority
+import com.example.hometask3.data.models.Priority
 
 class PriorityConverter {
     @TypeConverter

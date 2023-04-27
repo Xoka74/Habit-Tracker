@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="fragments.MainFragment">
+    tools:context=".ui.habits_list.HabitListFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
@@ -12,7 +12,7 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
     <include
-        android:id="@+id/bottomSheetContainer"
+        android:id="@+id/bottomSheet"
         layout="@layout/bottom_sheet" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -24,7 +24,7 @@
         android:contentDescription="@string/submit"
         android:src="@drawable/add_icon"
         app:fabCustomSize="75dp"
-        app:layout_anchor="@id/bottomSheetContainer"
+        app:layout_anchor="@id/bottomSheet"
         app:layout_anchorGravity="top|end"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
