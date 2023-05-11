@@ -2,6 +2,7 @@ package com.example.hometask3.ui.habit_details
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,10 +18,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.hometask3.R
 import com.example.hometask3.data.HabitDatabase
-import com.example.hometask3.data.models.Duration
-import com.example.hometask3.data.models.Habit
-import com.example.hometask3.data.models.HabitType
-import com.example.hometask3.data.models.Priority
+import com.example.hometask3.data.data_sources.HabitApi
+import com.example.hometask3.data.models.entities.Duration
+import com.example.hometask3.data.models.entities.Habit
+import com.example.hometask3.data.models.entities.HabitType
+import com.example.hometask3.data.models.entities.Priority
+import com.example.hometask3.data.repositories.HabitRepository
 import com.example.hometask3.databinding.FragmentHabitDetailsBinding
 import com.example.hometask3.utils.AdapterUtils
 
@@ -40,10 +43,11 @@ class HabitDetailsFragment : Fragment() {
 
     private val habitViewModel: HabitViewModel by activityViewModels(factoryProducer = {
         HabitViewModelFactory(
-            HabitDatabase.getInstance(requireContext()).getHabitDao()
+            HabitRepository(HabitDatabase.getInstance(requireContext()).getHabitDao()),
+            HabitApi()
         )
     })
-    private var isEditMode = false
+
 
     companion object {
         const val habitIdTag = "habit_id_tag"
@@ -54,17 +58,18 @@ class HabitDetailsFragment : Fragment() {
     ): View {
         setupColors(binding.colorsContainer,
             resources.getStringArray(R.array.habit_colors).map { str -> Color.parseColor(str) })
-        arguments?.getInt(habitIdTag)?.let { id ->
-            isEditMode = true
-            HabitDatabase.getInstance(requireContext()).getHabitDao().getHabitById(id)
-                .observe(viewLifecycleOwner) { habit ->
-                    habitViewModel.postHabit(habit)
-                    enableEditMode(habit)
+        val habitId = arguments?.getString(habitIdTag)
+        Log.e("HABIT_ID", habitId.toString())
+        if (habitId != null) {
+            HabitDatabase.getInstance(requireContext()).getHabitDao().getHabitById(habitId)
+                .observe(viewLifecycleOwner) {
+                    habitViewModel.triggerHabit(it)
                     binding.habitModel = habitViewModel
                 }
-        }.run {
-            habitViewModel.postHabit(Habit())
-            enableEditMode(Habit())
+        } else {
+            val defaultHabit = Habit()
+            habitViewModel.triggerHabit(defaultHabit)
+            enableEditMode(defaultHabit)
         }
 
         return binding.root
@@ -84,8 +89,8 @@ class HabitDetailsFragment : Fragment() {
             completeCreationButton.setOnClickListener { onClickComplete() }
             typeButtonsRadiogroup.setOnCheckedChangeListener { _, checkedId ->
                 val checkedType = when (checkedId) {
-                    R.id.good_habit_button -> HabitType.Good
-                    else -> HabitType.Bad
+                    R.id.good_habit_button -> HabitType.GOOD
+                    else -> HabitType.BAD
                 }
                 habitViewModel.triggerType(checkedType)
             }
@@ -120,14 +125,14 @@ class HabitDetailsFragment : Fragment() {
             prioritySpinner.setSelection(priorityAdapter.getPosition(habit.priority))
             intervalSpinner.setSelection(intervalAdapter.getPosition(habit.periodicity.interval))
             (typeButtonsRadiogroup.children.first {
-                (it as TextView).text.toString() == habit.type.name
+                (it as TextView).text.toString().uppercase() == habit.type.name
             } as RadioButton).isChecked = true
         }
     }
 
     private fun onClickComplete() {
         if (!dataIsCorrect()) return
-        if (isEditMode) habitViewModel.edit() else habitViewModel.save()
+        habitViewModel.save()
         findNavController().navigate(R.id.action_habitDetailsFragment_to_mainFragment)
     }
 

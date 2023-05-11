@@ -1,7 +1,7 @@
 package com.example.hometask3.ui.habits_list.adapter.diff_utils
 
 import androidx.recyclerview.widget.DiffUtil
-import com.example.hometask3.data.models.Habit
+import com.example.hometask3.data.models.entities.Habit
 
 class HabitsDiffUtilCallback(
     private val oldList: List<Habit>,

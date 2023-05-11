@@ -1,4 +1,4 @@
-package com.example.hometask3.data.models
+package com.example.hometask3.data.models.entities
 
 class TimeInterval(intervalAmount: Int, var interval: Duration) : java.io.Serializable {
     var intervalAmount: Int

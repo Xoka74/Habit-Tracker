@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.hometask3.R
 import com.example.hometask3.databinding.ItemHabitBinding
 import com.example.hometask3.ui.habits_list.adapter.diff_utils.HabitsDiffUtilCallback
-import com.example.hometask3.data.models.Habit
+import com.example.hometask3.data.models.entities.Habit
 
 class HabitAdapter(
     private var habits: List<Habit> = listOf(),

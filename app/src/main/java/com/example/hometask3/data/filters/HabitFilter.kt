@@ -1,7 +1,7 @@
 package com.example.hometask3.data.filters
 
-import com.example.hometask3.data.models.Habit
-import com.example.hometask3.data.models.HabitType
+import com.example.hometask3.data.models.entities.Habit
+import com.example.hometask3.data.models.entities.HabitType
 
 class HabitFilter(
     var query: String? = null,

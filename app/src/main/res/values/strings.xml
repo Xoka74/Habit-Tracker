@@ -43,4 +43,5 @@
     <string name="orderbyascending">orderByAscending</string>
     <string name="all">All</string>
     <string name="filterByType">Фильтровать по типу:</string>
+    <string name="profilePicture">Profile Picture</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.example.hometask3.data.models
+package com.example.hometask3.data.models.entities
 
 enum class Duration {
     MINUTE,

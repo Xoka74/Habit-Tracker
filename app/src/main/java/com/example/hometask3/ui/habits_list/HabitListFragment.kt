@@ -10,9 +10,11 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.hometask3.R
 import com.example.hometask3.data.HabitDatabase
+import com.example.hometask3.data.data_sources.HabitApi
 import com.example.hometask3.data.filters.HabitFilter
-import com.example.hometask3.data.models.Habit
-import com.example.hometask3.data.models.HabitType
+import com.example.hometask3.data.models.entities.Habit
+import com.example.hometask3.data.models.entities.HabitType
+import com.example.hometask3.data.repositories.HabitRepository
 import com.example.hometask3.databinding.FragmentHabitListBinding
 import com.example.hometask3.ui.habit_details.HabitDetailsFragment
 import com.example.hometask3.ui.habits_list.adapter.HabitAdapter
@@ -25,7 +27,8 @@ class HabitListFragment : Fragment() {
     private val viewModel: HabitListViewModel by viewModels(
         factoryProducer = {
             HabitListViewModelFactory(
-                HabitDatabase.getInstance(requireContext()).getHabitDao()
+                HabitRepository(HabitDatabase.getInstance(requireContext()).getHabitDao()),
+                HabitApi()
             )
         }
     )
@@ -39,18 +42,18 @@ class HabitListFragment : Fragment() {
 
         viewModel.setFilter(filter)
 
-        viewModel.filter.observe(viewLifecycleOwner) {
-            viewModel.applyFilters(it)
-        }
 
         val habitAdapter = HabitAdapter { onClickEditHabit(it) }
 
         binding.recyclerView.adapter = habitAdapter
         setupBottomSheetFragment()
-        viewModel.roomHabits.observe(viewLifecycleOwner){
-            viewModel.setHabits()
-            viewModel.habits.observe(viewLifecycleOwner) { habits ->
-                habitAdapter.updateList(habits)
+
+
+        viewModel.habits.observe(viewLifecycleOwner) {
+            if (it != null) {
+                activity?.runOnUiThread {
+                    habitAdapter.updateList(it)
+                }
             }
         }
 
@@ -59,20 +62,12 @@ class HabitListFragment : Fragment() {
 
     private fun setupBottomSheetFragment() {
         with(binding.bottomSheet) {
-            orderByAscendingButton.setOnClickListener {
-                viewModel.orderByPriority(true)
-            }
-
-            orderByDescendingButton.setOnClickListener {
-                viewModel.orderByPriority(false)
-            }
-
             goodTypeButton.setOnClickListener {
-                viewModel.setFilter(filter.apply { type = HabitType.Good })
+                viewModel.setFilter(filter.apply { type = HabitType.GOOD })
             }
 
             badTypeButton.setOnClickListener {
-                viewModel.setFilter(filter.apply { type = HabitType.Bad })
+                viewModel.setFilter(filter.apply { type = HabitType.BAD })
             }
 
             allTypesButton.setOnClickListener {
@@ -102,7 +97,7 @@ class HabitListFragment : Fragment() {
     }
 
     private fun onClickEditHabit(habit: Habit) {
-        val args = Bundle().apply { putInt(HabitDetailsFragment.habitIdTag, habit.id ?: return) }
+        val args = Bundle().apply { putString(HabitDetailsFragment.habitIdTag, habit.uid) }
         findNavController().navigate(R.id.action_mainFragment_to_habitDetailsFragment, args)
     }
 }

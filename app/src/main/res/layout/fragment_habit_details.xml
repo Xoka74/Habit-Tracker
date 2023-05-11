@@ -146,7 +146,7 @@
                         android:autofillHints="true"
                         android:hint="@string/times_hint"
                         android:inputType="number"
-                        android:text="@{String.valueOf(habitModel.habit.completionAmount)}"
+                        android:text="@{String.valueOf(habitModel.habit.count)}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
