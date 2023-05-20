@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface HabitDao {
     @Query("SELECT * FROM Habit")
-    fun getAllHabits(): LiveData<List<Habit>>
+    fun getAllHabits(): Flow<List<Habit>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(habit: Habit)
@@ -23,8 +23,5 @@ interface HabitDao {
     fun getHabitById(id: String): LiveData<Habit>
 
     @Query("SELECT * FROM Habit WHERE name LIKE '%' || :query || '%'")
-    fun searchHabits(query : String) : LiveData<List<Habit>>
-
-    @Query("SELECT * FROM Habit WHERE isSynced = 0")
-    fun getNonSynchronizedHabits() : LiveData<List<Habit>>
+    fun searchHabits(query : String) : Flow<List<Habit>>
 }

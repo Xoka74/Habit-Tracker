@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.hometask3.data.data_sources.HabitApi
 import com.example.hometask3.data.data_sources.generics.ApiResult
+import com.example.hometask3.data.filters.HabitFilter
 import com.example.hometask3.data.models.entities.Duration
 import com.example.hometask3.data.models.entities.Habit
 import com.example.hometask3.data.models.entities.HabitType

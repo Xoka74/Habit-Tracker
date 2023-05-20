@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.hometask3.R
 import com.example.hometask3.data.HabitDatabase
@@ -19,6 +20,8 @@ import com.example.hometask3.databinding.FragmentHabitListBinding
 import com.example.hometask3.ui.habit_details.HabitDetailsFragment
 import com.example.hometask3.ui.habits_list.adapter.HabitAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class HabitListFragment : Fragment() {
@@ -48,9 +51,8 @@ class HabitListFragment : Fragment() {
         binding.recyclerView.adapter = habitAdapter
         setupBottomSheetFragment()
 
-
-        viewModel.habits.observe(viewLifecycleOwner) {
-            if (it != null) {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.habits.collect {
                 activity?.runOnUiThread {
                     habitAdapter.updateList(it)
                 }
@@ -63,23 +65,21 @@ class HabitListFragment : Fragment() {
     private fun setupBottomSheetFragment() {
         with(binding.bottomSheet) {
             goodTypeButton.setOnClickListener {
-                viewModel.setFilter(filter.apply { type = HabitType.GOOD })
+                viewModel.setFilter(filter.copy(type=HabitType.GOOD))
             }
 
             badTypeButton.setOnClickListener {
-                viewModel.setFilter(filter.apply { type = HabitType.BAD })
+                viewModel.setFilter(filter.copy(type=HabitType.BAD))
             }
 
             allTypesButton.setOnClickListener {
-                viewModel.setFilter(filter.apply { type = null })
+                viewModel.setFilter(filter.copy(type=null))
             }
 
             searchView.setOnQueryTextListener(object :
                 SearchView.OnQueryTextListener {
                 override fun onQueryTextChange(query: String?): Boolean {
-                    viewModel.setFilter(filter.apply {
-                        this.query = query.toString()
-                    })
+                    viewModel.setFilter(filter.copy(query=query.toString()))
                     return true
                 }
 

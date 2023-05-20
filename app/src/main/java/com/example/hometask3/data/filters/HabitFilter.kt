@@ -3,7 +3,7 @@ package com.example.hometask3.data.filters
 import com.example.hometask3.data.models.entities.Habit
 import com.example.hometask3.data.models.entities.HabitType
 
-class HabitFilter(
+data class HabitFilter(
     var query: String? = null,
     var type: HabitType? = null,
 ) {

@@ -48,7 +48,6 @@ class HabitDetailsFragment : Fragment() {
         )
     })
 
-
     companion object {
         const val habitIdTag = "habit_id_tag"
     }
@@ -104,8 +103,6 @@ class HabitDetailsFragment : Fragment() {
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
-
-
 
             intervalSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
