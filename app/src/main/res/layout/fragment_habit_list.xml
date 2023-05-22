@@ -1,9 +1,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.habits_list.HabitListFragment">
+    android:layout_height="match_parent">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
@@ -11,9 +9,6 @@
         android:layout_height="match_parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-    <include
-        android:id="@+id/bottomSheet"
-        layout="@layout/bottom_sheet" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_habit_button"
@@ -22,9 +17,8 @@
         android:layout_gravity="end|bottom"
         android:layout_margin="20dp"
         android:contentDescription="@string/submit"
-        android:src="@drawable/add_icon"
+        android:src="@drawable/add_black"
         app:fabCustomSize="75dp"
-        app:layout_anchor="@id/bottomSheet"
         app:layout_anchorGravity="top|end"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

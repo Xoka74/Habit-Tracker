@@ -44,4 +44,5 @@
     <string name="all">All</string>
     <string name="filterByType">Фильтровать по типу:</string>
     <string name="profilePicture">Profile Picture</string>
+    <string name="action_search">Search habit</string>
 </resources>

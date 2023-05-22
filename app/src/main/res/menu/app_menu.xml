@@ -2,10 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/mainFragment"
-        android:icon="@drawable/home_white_icon"
+        android:icon="@drawable/home_white"
         android:title="@string/home" />
     <item
         android:id="@+id/appInfo"
-        android:icon="@drawable/info_white_icon"
+        android:icon="@drawable/info_white"
         android:title="@string/about_app" />
 </menu>
