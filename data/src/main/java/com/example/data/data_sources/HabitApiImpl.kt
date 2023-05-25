@@ -18,7 +18,6 @@ class HabitApiImpl @Inject constructor(
         return when (val result = Network.safeApiCall { service.getHabits(token) }) {
             is ApiResult.Success ->
                 ApiResult.Success(result.data.map { habitConverter.dtoToHabit(it) })
-
             is ApiResult.Error -> ApiResult.Error(result.code, result.message)
             is ApiResult.Exception -> ApiResult.Exception(result.e)
         }

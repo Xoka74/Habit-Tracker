@@ -24,7 +24,7 @@ class HabitListViewModel(
 ) : AndroidViewModel(app) {
 
     private val filterFlow = MutableStateFlow(HabitFilter())
-
+    val roomHabits = habitRepository.getAllHabits()
     val habits = flow {
         while (true) {
             val response = habitApi.getHabits()
@@ -43,17 +43,23 @@ class HabitListViewModel(
         filterFlow.value = filter
     }
 
-    fun performHabit(habit : Habit) : Habit {
+    fun performHabit(habit : Habit) : List<Long> {
         val doneDate = nowDate().time
+        val timePeriod = habit.periodicity.toLong()
+
+        val timePeriodCount = (doneDate - habit.creationDate) / timePeriod
         val newDoneDates = habit.doneDates.toMutableList()
             .apply { add(doneDate) }
+
+        val resultDoneDates = newDoneDates.filter { timePeriodCount == ((it - habit.creationDate) / timePeriod) }
+
         habit.doneDates = newDoneDates
         viewModelScope.launch(Dispatchers.IO) {
             habitRepository.update(habit)
             habitApi.habitDone(habit.uid, doneDate)
         }
 
-        return habit
+        return resultDoneDates
     }
 }
 

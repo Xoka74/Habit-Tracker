@@ -41,11 +41,10 @@ class HabitListFragment : Fragment() {
     }
 
     private fun onClickPerformHabit(habit: Habit) {
-        Log.e("HABIT_INSTANCE", habit.toString())
-        val newHabit = viewModel.performHabit(habit)
-        val delta = newHabit.count - newHabit.doneDates.size
+        val doneDates = viewModel.performHabit(habit)
+        val delta = habit.count - doneDates.size
 
-        val text : String = if (newHabit.type == HabitType.BAD){
+        val text : String = if (habit.type == HabitType.BAD){
             if(delta < 0) "Хватит это делать"
             else "Можно выполнить ещё $delta раз"
         }
@@ -73,7 +72,6 @@ class HabitListFragment : Fragment() {
             viewModel.habits.collect {
                 runOnUiThread {
                     habitAdapter.updateList(it)
-                    for(i in it){ println(i) }
                 }
             }
         }

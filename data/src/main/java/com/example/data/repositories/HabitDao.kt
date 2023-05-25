@@ -2,6 +2,7 @@ package com.example.data.repositories
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -14,10 +15,13 @@ interface HabitDao {
     @Query("SELECT * FROM Habit")
     fun getAllHabits(): Flow<List<Habit>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     fun insert(habit: Habit)
     @Update
     fun update(habit: Habit)
+
+    @Delete
+    fun delete(habit : Habit)
 
     @Query("SELECT * FROM Habit WHERE uid=:id")
     fun getHabitById(id: String): Habit

@@ -71,10 +71,10 @@ class HabitDetailsFragment : Fragment() {
         if (habitId != null) {
             habitViewModel.triggerHabit(habitId)
             binding.habitModel = habitViewModel
+            enableEditMode(habitViewModel.habit.value)
         } else {
-            val defaultHabit = Habit()
             habitViewModel.triggerHabit(null)
-            enableEditMode(defaultHabit)
+            enableEditMode(Habit())
         }
 
         return binding.root

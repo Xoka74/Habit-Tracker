@@ -20,7 +20,7 @@ class HabitConverter {
             color = habitDto.color,
             creationDate = habitDto.date * 1000,
             periodicity = TimeInterval(habitDto.frequency, Duration.DAY),
-            doneDates = habitDto.doneDates.map { (it * 1000).toLong() }
+            doneDates = habitDto.doneDates.map { it.toLong() * 1000 }
         )
     }
 

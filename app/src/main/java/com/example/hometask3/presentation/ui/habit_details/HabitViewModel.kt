@@ -30,8 +30,7 @@ class HabitViewModel(
     fun triggerHabit(id: String?) {
         var habit = Habit()
         if (id != null) {
-            habit = habitRepository.getHabitById(id)
-            println(habit)
+            habit = habitRepository.getHabitById(id) ?: Habit()
         }
         mutableHabit.value = habit
     }
@@ -49,7 +48,7 @@ class HabitViewModel(
             habit = habit.copy(uid = result.data, isSynced = true)
         }
 
-        habitRepository.insert(habit)
+        habitRepository.update(habit)
     }
 
     //region Triggers
