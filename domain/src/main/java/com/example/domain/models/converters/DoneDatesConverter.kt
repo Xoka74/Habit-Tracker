@@ -11,6 +11,7 @@ class DoneDatesConverter {
 
     @TypeConverter
     fun toDoneDates(src : String) : List<Long> {
+        if (src == "") return listOf()
         return src.split(", ").map { it.toLong() }
     }
 }

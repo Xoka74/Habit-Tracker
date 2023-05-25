@@ -5,7 +5,6 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.example.domain.models.converters.DateConverter
 import com.example.domain.models.converters.DoneDatesConverter
 import com.example.domain.models.converters.PriorityConverter
 import com.example.domain.utils.DateUtils.nowDate

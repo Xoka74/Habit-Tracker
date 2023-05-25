@@ -31,6 +31,7 @@ class HabitViewModel(
         var habit = Habit()
         if (id != null) {
             habit = habitRepository.getHabitById(id)
+            println(habit)
         }
         mutableHabit.value = habit
     }
@@ -47,6 +48,7 @@ class HabitViewModel(
         if (result is ApiResult.Success) {
             habit = habit.copy(uid = result.data, isSynced = true)
         }
+
         habitRepository.insert(habit)
     }
 

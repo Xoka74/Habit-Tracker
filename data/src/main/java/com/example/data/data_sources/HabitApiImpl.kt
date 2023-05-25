@@ -39,7 +39,7 @@ class HabitApiImpl @Inject constructor(
 
     suspend fun habitDone(uid: String, date: Long) : ApiResult<String> {
         return Network.safeApiCall {
-            service.habitDone(token, HabitDoneBody(uid, date))
+            service.habitDone(token, HabitDoneBody(uid, (date / 1000).toInt()))
         }
     }
 }

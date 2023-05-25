@@ -20,6 +20,7 @@ import com.example.hometask3.presentation.ui.habit_details.HabitDetailsFragment
 import com.example.hometask3.presentation.ui.habits_list.adapter.HabitAdapter
 import com.example.hometask3.utils.runOnUiThread
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -72,6 +73,7 @@ class HabitListFragment : Fragment() {
             viewModel.habits.collect {
                 runOnUiThread {
                     habitAdapter.updateList(it)
+                    for(i in it){ println(i) }
                 }
             }
         }
@@ -79,7 +81,7 @@ class HabitListFragment : Fragment() {
         return binding.root
     }
 
-    private fun onClickEditHabit(habit: com.example.domain.models.entities.Habit) {
+    private fun onClickEditHabit(habit: Habit) {
         val args = Bundle().apply { putString(HabitDetailsFragment.habitIdTag, habit.uid) }
         findNavController().navigate(R.id.action_mainFragment_to_habitDetailsFragment, args)
     }

@@ -17,9 +17,7 @@ class LocalDataModule(private val context: Context) {
     fun provideHabitDatabase(): HabitDatabase {
         return Room.databaseBuilder(context, HabitDatabase::class.java, "habit_database")
             .allowMainThreadQueries()
-            .fallbackToDestructiveMigration()
             .build()
-            .apply { clearAllTables() }
     }
 
     @Singleton

@@ -47,14 +47,13 @@ class HabitListViewModel(
         val doneDate = nowDate().time
         val newDoneDates = habit.doneDates.toMutableList()
             .apply { add(doneDate) }
-        val newHabit = habit.copy(doneDates=newDoneDates)
+        habit.doneDates = newDoneDates
         viewModelScope.launch(Dispatchers.IO) {
-            habitRepository.update(newHabit)
+            habitRepository.update(habit)
             habitApi.habitDone(habit.uid, doneDate)
-            habitApi.addOrUpdate(habit)
         }
 
-        return newHabit
+        return habit
     }
 }
 
