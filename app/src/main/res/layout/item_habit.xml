@@ -168,8 +168,15 @@
                 android:text="@{habit.periodicity.toString()}"
                 android:textSize="15sp"
                 tools:text="5 weeks" />
+
         </LinearLayout>
 
-
+        <Button
+            android:id="@+id/performButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/perform"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/periodicity_container" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

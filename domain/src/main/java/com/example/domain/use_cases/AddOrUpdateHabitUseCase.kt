@@ -5,6 +5,7 @@ import com.example.domain.models.generics.ApiResult
 import com.example.domain.repositories.HabitApi
 import com.example.domain.repositories.HabitRepository
 import com.example.domain.utils.DateUtils
+import com.example.domain.utils.DateUtils.nowDate
 
 class AddOrUpdateHabitUseCase(
     private val habitApi : HabitApi,
@@ -14,7 +15,7 @@ class AddOrUpdateHabitUseCase(
     suspend operator fun invoke(){
         with(habit) {
             isSynced = true
-            date = DateUtils.nowDate()
+            creationDate = nowDate().time
             val result = habitApi.addOrUpdate(this)
             if (result is ApiResult.Success) {
                 uid = result.data

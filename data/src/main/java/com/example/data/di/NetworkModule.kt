@@ -35,5 +35,10 @@ class NetworkModule {
 
     @Singleton
     @Provides
+    @Named("token")
+    fun provideToken() = "54cd48d6-3c00-4d4e-9d81-0a1450b0d313"
+
+    @Singleton
+    @Provides
     fun provideHttpClient(): OkHttpClient = OkHttpClient()
 }

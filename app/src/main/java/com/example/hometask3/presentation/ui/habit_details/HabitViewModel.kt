@@ -28,10 +28,11 @@ class HabitViewModel(
         get() = mutableHabit.asStateFlow()
 
     fun triggerHabit(id: String?) {
+        var habit = Habit()
         if (id != null) {
-            mutableHabit.value = habitRepository.getHabitById(id)
+            habit = habitRepository.getHabitById(id)
         }
-        mutableHabit.value = Habit()
+        mutableHabit.value = habit
     }
 
     fun save() {
@@ -41,16 +42,12 @@ class HabitViewModel(
     }
 
     private suspend fun addOrUpdate() {
-
-        with(habit.value) {
-            isSynced = true
-            date = nowDate()
-            val result = habitApi.addOrUpdate(this)
-            if (result is ApiResult.Success) {
-                uid = result.data
-            }
-            habitRepository.insert(this)
+        var habit = habit.value.copy(creationDate = nowDate().time)
+        val result = habitApi.addOrUpdate(habit)
+        if (result is ApiResult.Success) {
+            habit = habit.copy(uid = result.data, isSynced = true)
         }
+        habitRepository.insert(habit)
     }
 
     //region Triggers

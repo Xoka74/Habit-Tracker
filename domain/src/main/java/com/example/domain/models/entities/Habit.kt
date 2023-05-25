@@ -6,12 +6,12 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.example.domain.models.converters.DateConverter
+import com.example.domain.models.converters.DoneDatesConverter
 import com.example.domain.models.converters.PriorityConverter
 import com.example.domain.utils.DateUtils.nowDate
-import java.util.Date
 
 @Entity
-@TypeConverters(PriorityConverter::class, DateConverter::class)
+@TypeConverters(PriorityConverter::class, DoneDatesConverter::class)
 data class Habit (
     @PrimaryKey var uid: String = "",
     var name: String = "",
@@ -19,8 +19,9 @@ data class Habit (
     var priority: Priority = Priority.LOW,
     var type: HabitType = HabitType.BAD,
     var count: Int = 0,
-    var date: Date = nowDate(),
+    var creationDate: Long = nowDate().time,
     @Embedded val periodicity: TimeInterval = TimeInterval(0, Duration.DAY),
     var color: Int = Color.RED,
     var isSynced: Boolean = false,
+    var doneDates: List<Long> = listOf()
 )

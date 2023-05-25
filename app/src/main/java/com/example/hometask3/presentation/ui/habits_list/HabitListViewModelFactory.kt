@@ -1,4 +1,4 @@
-package com.example.hometask3.presentation.ui.habits_list.adapter
+package com.example.hometask3.presentation.ui.habits_list
 
 
 import android.app.Application
@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.data.data_sources.HabitApiImpl
 import com.example.domain.repositories.HabitRepository
-import com.example.hometask3.presentation.ui.habits_list.HabitListViewModel
 import javax.inject.Inject
 
 class HabitListViewModelFactory @Inject constructor(

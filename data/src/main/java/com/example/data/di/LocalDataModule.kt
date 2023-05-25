@@ -19,6 +19,7 @@ class LocalDataModule(private val context: Context) {
             .allowMainThreadQueries()
             .fallbackToDestructiveMigration()
             .build()
+            .apply { clearAllTables() }
     }
 
     @Singleton

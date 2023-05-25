@@ -6,13 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import com.example.domain.models.entities.HabitType
 import com.example.domain.models.filters.HabitFilter
 import com.example.hometask3.MainApplication
 import com.example.hometask3.databinding.FragmentBottomSheetBinding
 import com.example.hometask3.presentation.ui.habits_list.HabitListViewModel
-import com.example.hometask3.presentation.ui.habits_list.adapter.HabitListViewModelFactory
+import com.example.hometask3.presentation.ui.habits_list.HabitListViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import javax.inject.Inject
 
@@ -22,7 +22,9 @@ class FilterBottomSheetFragment : BottomSheetDialogFragment() {
 
     @Inject
     lateinit var habitListViewModelFactory: HabitListViewModelFactory
-    private lateinit var viewModel: HabitListViewModel
+    private val viewModel: HabitListViewModel by viewModels(
+        factoryProducer = { habitListViewModelFactory }
+    )
     private val filter by lazy { HabitFilter() }
 
     override fun onAttach(context: Context) {
@@ -37,8 +39,6 @@ class FilterBottomSheetFragment : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        viewModel =
-            ViewModelProvider(requireActivity(), habitListViewModelFactory)[HabitListViewModel::class.java]
         with(binding) {
             goodTypeButton.setOnClickListener {
                 viewModel.triggerFilter(filter.copy(type = HabitType.GOOD))
@@ -63,12 +63,6 @@ class FilterBottomSheetFragment : BottomSheetDialogFragment() {
                 }
             })
         }
-
-//        BottomSheetBehavior.from(binding.bscLayout).apply {
-//                peekHeight = 200
-//                maxHeight = 600
-//                state = BottomSheetBehavior.STATE_COLLAPSED
-//        }
 
         return binding.root
     }

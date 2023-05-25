@@ -2,14 +2,19 @@ package com.example.hometask3.presentation.ui.habits_list
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.data.data_sources.HabitApiImpl
+import com.example.domain.models.entities.Habit
 import com.example.domain.models.generics.ApiResult
 import com.example.domain.models.filters.HabitFilter
 import com.example.domain.repositories.HabitRepository
+import com.example.domain.utils.DateUtils.nowDate
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 
 
 class HabitListViewModel(
@@ -18,7 +23,6 @@ class HabitListViewModel(
     app: Application
 ) : AndroidViewModel(app) {
 
-//    private var roomHabits = habitRepository.getAllHabits()
     private val filterFlow = MutableStateFlow(HabitFilter())
 
     val habits = flow {
@@ -28,6 +32,7 @@ class HabitListViewModel(
                 emit(response.data)
                 break
             }
+
             delay(2500)
         }
     }.combine(filterFlow) { habits, filter ->
@@ -37,4 +42,20 @@ class HabitListViewModel(
     fun triggerFilter(filter: HabitFilter) {
         filterFlow.value = filter
     }
+
+    fun performHabit(habit : Habit) : Habit {
+        val doneDate = nowDate().time
+        val newDoneDates = habit.doneDates.toMutableList()
+            .apply { add(doneDate) }
+        val newHabit = habit.copy(doneDates=newDoneDates)
+        viewModelScope.launch(Dispatchers.IO) {
+            habitRepository.update(newHabit)
+            habitApi.habitDone(habit.uid, doneDate)
+            habitApi.addOrUpdate(habit)
+        }
+
+        return newHabit
+    }
 }
+
+

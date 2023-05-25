@@ -15,6 +15,7 @@ import com.example.hometask3.databinding.ItemHabitBinding
 class HabitAdapter(
     private var habits: List<Habit> = listOf(),
     private val onItemClick: ((Habit) -> Unit),
+    private val onPerformButtonClick: ((Habit) -> Unit),
 ) : RecyclerView.Adapter<HabitAdapter.HabitViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HabitViewHolder {
@@ -44,6 +45,7 @@ class HabitAdapter(
             with(binding) {
                 colorDot.setImageDrawable(getDrawable(habit.color))
                 habitContainer.setOnClickListener { onItemClick(habit) }
+                performButton.setOnClickListener { onPerformButtonClick(habit) }
             }
         }
 

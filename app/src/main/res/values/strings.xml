@@ -45,4 +45,5 @@
     <string name="filterByType">Фильтровать по типу:</string>
     <string name="profilePicture">Profile Picture</string>
     <string name="action_search">Search habit</string>
+    <string name="perform">Perform</string>
 </resources>

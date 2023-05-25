@@ -2,20 +2,22 @@ package com.example.hometask3.presentation.ui.habits_list
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.domain.models.entities.Habit
+import com.example.domain.models.entities.HabitType
 import com.example.hometask3.MainApplication
 import com.example.hometask3.R
 import com.example.hometask3.databinding.FragmentHabitListBinding
-import com.example.hometask3.presentation.ui.filter_bottom_sheet.FilterBottomSheetFragment
 import com.example.hometask3.presentation.ui.habit_details.HabitDetailsFragment
 import com.example.hometask3.presentation.ui.habits_list.adapter.HabitAdapter
-import com.example.hometask3.presentation.ui.habits_list.adapter.HabitListViewModelFactory
 import com.example.hometask3.utils.runOnUiThread
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,7 +28,9 @@ class HabitListFragment : Fragment() {
 
     @Inject
     lateinit var habitListViewModelFactory: HabitListViewModelFactory
-    private lateinit var viewModel: HabitListViewModel
+    private val viewModel: HabitListViewModel by viewModels(
+        factoryProducer = { habitListViewModelFactory }
+    )
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -35,15 +39,33 @@ class HabitListFragment : Fragment() {
             .inject(this)
     }
 
+    private fun onClickPerformHabit(habit: Habit) {
+        Log.e("HABIT_INSTANCE", habit.toString())
+        val newHabit = viewModel.performHabit(habit)
+        val delta = newHabit.count - newHabit.doneDates.size
+
+        val text : String = if (newHabit.type == HabitType.BAD){
+            if(delta < 0) "Хватит это делать"
+            else "Можно выполнить ещё $delta раз"
+        }
+        else{
+            if(delta < 0) "You are breathtaking!"
+            else "Стоит выполнить ещё $delta раз"
+        }
+        Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding.addHabitButton.setOnClickListener {
             findNavController().navigate(R.id.action_mainFragment_to_habitDetailsFragment)
         }
-        viewModel =
-            ViewModelProvider(requireActivity(), habitListViewModelFactory)[HabitListViewModel::class.java]
-        val habitAdapter = HabitAdapter { onClickEditHabit(it) }
+
+        val habitAdapter = HabitAdapter(listOf(),
+                { onClickEditHabit(it) },
+                { onClickPerformHabit(it) })
+
         binding.recyclerView.adapter = habitAdapter
 
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {

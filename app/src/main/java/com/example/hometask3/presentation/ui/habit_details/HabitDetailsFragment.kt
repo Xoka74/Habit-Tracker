@@ -14,7 +14,7 @@ import android.widget.TextView
 import androidx.core.view.children
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.domain.models.entities.Duration
 import com.example.domain.models.entities.Habit
@@ -23,7 +23,6 @@ import com.example.domain.models.entities.Priority
 import com.example.hometask3.MainApplication
 import com.example.hometask3.R
 import com.example.hometask3.databinding.FragmentHabitDetailsBinding
-import com.example.hometask3.di.AppComponent
 import com.example.hometask3.utils.AdapterUtils
 import javax.inject.Inject
 
@@ -47,7 +46,9 @@ class HabitDetailsFragment : Fragment() {
 
     @Inject
     lateinit var habitViewModelFactory: HabitViewModelFactory
-    private lateinit var habitViewModel: HabitViewModel
+    private val habitViewModel: HabitViewModel by viewModels(
+        factoryProducer = { habitViewModelFactory }
+    )
 
     companion object {
         const val habitIdTag = "habit_id_tag"
@@ -65,8 +66,6 @@ class HabitDetailsFragment : Fragment() {
     ): View {
         setupColors(binding.colorsContainer,
             resources.getStringArray(R.array.habit_colors).map { str -> Color.parseColor(str) })
-
-        habitViewModel = ViewModelProvider(this, habitViewModelFactory)[HabitViewModel::class.java]
 
         val habitId = arguments?.getString(habitIdTag)
         if (habitId != null) {

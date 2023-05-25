@@ -7,6 +7,7 @@ import com.example.data.repositories.HabitRepositoryImpl
 import com.example.domain.repositories.HabitRepository
 import dagger.Module
 import dagger.Provides
+import javax.inject.Named
 import javax.inject.Singleton
 
 
@@ -21,7 +22,10 @@ class DataModule {
 
     @Singleton
     @Provides
-    fun provideHabitApi(service: HabitApiService): HabitApiImpl {
-        return HabitApiImpl(service)
+    fun provideHabitApi(
+        service: HabitApiService,
+        @Named("token") token : String
+    ): HabitApiImpl {
+        return HabitApiImpl(service, token)
     }
 }

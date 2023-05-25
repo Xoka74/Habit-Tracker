@@ -7,5 +7,9 @@ data class TimeInterval(val intervalAmount: Int, var interval: Duration)  {
         val intervalLower = interval.toString().lowercase()
         return if (intervalAmount != 1) "$intervalAmount ${intervalLower}s" else intervalLower
     }
+
+    fun toLong() : Long {
+        return intervalAmount * interval.value
+    }
 }
 
